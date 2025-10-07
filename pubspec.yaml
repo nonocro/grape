@@ -31,6 +31,7 @@ flutter:
   uses-material-design: true
   
   fonts:
+  
     - family: ClimateCrisis
       fonts:
         - asset: assets/fonts/ClimateCrisis/ClimateCrisis.ttf
@@ -45,9 +46,11 @@ flutter:
     - assets/animations/
     - assets/images/
     - assets/images/gifs/
+    - assets/data/data.json
 
 flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/logo/logo.png"
   remove_alpha_ios: true
+
