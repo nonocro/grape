@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grape/pages/home.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 
 const int primaryValue = 0xFF781818; 
@@ -48,11 +49,7 @@ class MainApp extends StatelessWidget {
           ),
         ],
       ),
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+      home: HomePage()
     );
   }
 }
