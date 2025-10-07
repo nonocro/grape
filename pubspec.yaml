@@ -17,6 +17,10 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/images/gifs/
   fonts:
     - family: ClimateCrisis
       fonts:

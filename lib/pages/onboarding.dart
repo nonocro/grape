@@ -34,19 +34,33 @@ class _OnboardingState extends State<Onboarding> {
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.0),
-          child: PageView.builder(
-            itemCount: onBoardingData.length,
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _pageIndex = index;
-              });
-            },
-            itemBuilder: (context, index) => OnBoardingContent(
-              image: onBoardingData[index].image,
-              title: onBoardingData[index].title,
-              description: onBoardingData[index].description
-            ),
+          child: Column(
+            children: [
+              Expanded(
+                child: PageView.builder(
+                  itemCount: onBoardingData.length,
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _pageIndex = index;
+                    });
+                  },
+                  itemBuilder: (context, index) => OnBoardingContent(
+                    image: onBoardingData[index].image,
+                    title: onBoardingData[index].title,
+                    description: onBoardingData[index].description,
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  ...List.generate(
+                      onBoardingData.length, (index) =>
+                      Padding(padding: EdgeInsets.only(right: 8.0))
+                  )
+                ],
+              )
+            ],
           ),
         ),
       ),
@@ -69,19 +83,16 @@ class OnBoardingContent extends StatelessWidget {
     return Column(
       children: [
         Spacer(),
-        Image.asset(
-          image,
-          height: 250,
+        Flexible(
+          child: Image.asset(
+            "assets/images/gifs/location-pin.gif",
+            fit: BoxFit.contain,
+          ),
         ),
         Spacer(),
-        Text(
-          title,
-          textAlign: TextAlign.center,
-        ),
+        Text(title, textAlign: TextAlign.center),
         Spacer(),
-        Text(
-          description
-        )
+        Text(description),
       ],
     );
   }
@@ -102,14 +113,15 @@ class OnBoard {
 
 final List<OnBoard> onBoardingData = [
   OnBoard(
-    image: 'image',
-    title: "Find Some WIne",
-    description: "Fine some win within the application ",
+    image: 'assets/images/gifs/location-pin.gif',
+    title: "Localiser des vins près de vous",
+    description:
+        "Explorez une carte interactive pour trouver facilement des vins locaux autour de vous.",
   ),
   OnBoard(
-    image: 'image',
-    title: "Localisation des vins",
+    image: 'assets/images/gifs/search.gif',
+    title: "Rechercher des vins par nom",
     description:
-        "La carte interactive permet de localiser facilement les vins locaux",
+        "Trouvez rapidement votre vin préféré en effectuant une recherche par nom dans l’application.",
   ),
 ];
