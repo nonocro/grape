@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:grape/pages/home.dart';
+import 'package:grape/services/wine.dart';
 import 'package:grape/theme/app_colors_extension.dart';
+import 'components/splash_screen.dart';
 
 const int primaryValue = 0xFF781818; 
 const Color primaryColor = Color(primaryValue);
@@ -27,6 +29,10 @@ void main() {
 
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
+
+  Future<void> _loadData() async {
+    await fetchRedWines();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +61,10 @@ class MainApp extends StatelessWidget {
           ),
         ],
       ),
-      home: HomePage()
-    );
+      initialRoute: '/',
+      routes: {
+        '/': (context) => SplashScreen(loadData: _loadData),
+        '/home': (context) => HomePage(),
+      },    );
   }
 }
