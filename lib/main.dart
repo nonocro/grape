@@ -22,7 +22,7 @@ const MaterialColor customSwatch = MaterialColor(
 );
 
 void main() {
-  runApp(const MainApp());
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {

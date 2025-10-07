@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import '../models/wine_model.dart';
+import '../models/wine.dart';
 
 Future<List<Wine>> fetchRedWines() async {
   final response = await http.get(
