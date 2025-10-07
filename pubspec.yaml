@@ -17,3 +17,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: ClimateCrisis
+      fonts:
+        - asset: assets/fonts/ClimateCrisis/ClimateCrisis.ttf
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter/Inter.ttf
+        - asset: assets/fonts/Inter/Inter-italic.ttf
+          style: italic
