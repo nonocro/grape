@@ -10,7 +10,11 @@ Future<List<Wine>> fetchRedWines() async {
 
   if (response.statusCode == 200) {
     final List<dynamic> winesJson = jsonDecode(response.body) as List<dynamic>;
-    return winesJson.map((json) => Wine.fromJson(json as Map<String, dynamic>)).toList();
+    final wines = winesJson.map((json) => Wine.fromJson(json as Map<String, dynamic>));
+
+    return wines
+      .where((wine) => (wine.image).toLowerCase().endsWith('.png'))
+      .toList();
   } else {
     throw Exception('Failed to load wines');
   }

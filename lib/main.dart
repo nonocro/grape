@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:grape/components/auth_gate.dart';
 import 'package:grape/firebase_options.dart';
-import 'package:grape/pages/home.dart';
 import 'package:grape/services/wine.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 import 'package:grape/viewmodels/home_viewmodel.dart';
@@ -34,11 +33,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MainApp());
+  runApp(Home());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class Home extends StatelessWidget {
+  const Home({super.key});
 
   Future<void> _loadData() async {
     await fetchRedWines();
@@ -68,7 +67,7 @@ class MainApp extends StatelessWidget {
           extensions: const <ThemeExtension<dynamic>>[
             AppColorsExtension(
               backgroundColor: Color(0xFFFAFAFA),
-              cardColor: Colors.white,
+              cardColor: customSwatch,
               accentColor: Color(0xFFE5C65D),
             ),
           ],
