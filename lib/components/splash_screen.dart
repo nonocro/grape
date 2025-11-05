@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
       // Ensure the splash screen is visible for at least 2 seconds after data loads
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) {
-          Navigator.of(context).pushReplacementNamed('/home');
+          Navigator.of(context).pushReplacementNamed('/auth');
         }
       });
     });

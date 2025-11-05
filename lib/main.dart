@@ -1,7 +1,13 @@
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:grape/components/auth_gate.dart';
+import 'package:grape/firebase_options.dart';
 import 'package:grape/pages/home.dart';
 import 'package:grape/services/wine.dart';
 import 'package:grape/theme/app_colors_extension.dart';
+import 'package:grape/viewmodels/home_viewmodel.dart';
+import 'package:provider/provider.dart';
 import 'components/splash_screen.dart';
 
 const int primaryValue = 0xFF781818; 
@@ -23,7 +29,11 @@ const MaterialColor customSwatch = MaterialColor(
   },
 );
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MainApp());
 }
 
@@ -36,35 +46,40 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Grape',
-      theme: ThemeData(
-        primarySwatch: customSwatch,
-        scaffoldBackgroundColor: Colors.black,
-        fontFamily: 'Inter',
-        textTheme: TextTheme(
-          displayLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-          displayMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-          displaySmall: TextStyle(fontFamily: 'ClimateCrisis'),
-          headlineLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-          headlineMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-          headlineSmall: TextStyle(fontFamily: 'ClimateCrisis'),
-          titleLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-          titleMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-          titleSmall: TextStyle(fontFamily: 'ClimateCrisis'),
-        ),
-        extensions: const <ThemeExtension<dynamic>>[
-          AppColorsExtension(
-            backgroundColor: Color(0xFFFAFAFA),
-            cardColor: Colors.white,
-            accentColor: Color(0xFFE5C65D),
+    return ChangeNotifierProvider(
+      create: (_) => HomeViewModel(),
+      child: MaterialApp(
+        title: 'Grape',
+        theme: ThemeData(
+          primarySwatch: customSwatch,
+          scaffoldBackgroundColor: Colors.black,
+          fontFamily: 'Inter',
+          textTheme: TextTheme(
+            displayLarge: TextStyle(fontFamily: 'ClimateCrisis'),
+            displayMedium: TextStyle(fontFamily: 'ClimateCrisis'),
+            displaySmall: TextStyle(fontFamily: 'ClimateCrisis'),
+            headlineLarge: TextStyle(fontFamily: 'ClimateCrisis'),
+            headlineMedium: TextStyle(fontFamily: 'ClimateCrisis'),
+            headlineSmall: TextStyle(fontFamily: 'ClimateCrisis'),
+            titleLarge: TextStyle(fontFamily: 'ClimateCrisis'),
+            titleMedium: TextStyle(fontFamily: 'ClimateCrisis'),
+            titleSmall: TextStyle(fontFamily: 'ClimateCrisis'),
           ),
-        ],
+          extensions: const <ThemeExtension<dynamic>>[
+            AppColorsExtension(
+              backgroundColor: Color(0xFFFAFAFA),
+              cardColor: Colors.white,
+              accentColor: Color(0xFFE5C65D),
+            ),
+          ],
+        ),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => SplashScreen(loadData: _loadData),
+          '/auth': (context) => AuthGate(),
+          '/home': (context) => Home(),
+        },
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => SplashScreen(loadData: _loadData),
-        '/home': (context) => HomePage(),
-      },    );
+    );
   }
 }

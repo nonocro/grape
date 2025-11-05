@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1029952634629",
+    "project_id": "grape-8317a",
+    "storage_bucket": "grape-8317a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029952634629:android:f3e5638701866ab13d816c",
+        "android_client_info": {
+          "package_name": "com.example.grape"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029952634629-8e94jdnoprnhmp0umnrt0d4rctfnjj6v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZ0gYhcxheuQY6l1OiwLpD9Tt4F5NhReI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029952634629-8e94jdnoprnhmp0umnrt0d4rctfnjj6v.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1029952634629-j9k00c8dn035d9ns2nbd03nvvatcq1oi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.grape"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
