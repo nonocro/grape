@@ -33,6 +33,8 @@ flutter:
   assets:
     - assets/logo/
     - assets/animations/
+    - assets/images/
+    - assets/images/gifs/
 
 flutter_launcher_icons:
   android: true

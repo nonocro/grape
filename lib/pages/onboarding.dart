@@ -33,21 +33,23 @@ class _OnboardingState extends State<Onboarding> {
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.pushReplacementNamed(context, RouteNames.home); // futur Login ?
+      Navigator.pushReplacementNamed(context, RouteNames.home);
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColorsExtension>();
+
+    final bgColor = Colors.white;
+    final accentColor = colors?.accentColor ?? Theme.of(context).primaryColor;
+    final textColor = Colors.black; // ou Colors.white si le bg est foncé
+
     return Scaffold(
-      backgroundColor:
-          Theme.of(context).extension<AppColorsExtension>()?.backgroundColor ??
-          Colors.white,
+      backgroundColor: bgColor,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               Expanded(
@@ -63,33 +65,34 @@ class _OnboardingState extends State<Onboarding> {
                     image: onBoardingData[index].image,
                     title: onBoardingData[index].title,
                     description: onBoardingData[index].description,
+                    textColor: textColor,
                   ),
                 ),
               ),
+              const SizedBox(height: 50),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(
                   onBoardingData.length,
-                      (index) => AnimatedContainer(
+                  (index) => AnimatedContainer(
                     duration: const Duration(milliseconds: 300),
                     margin: const EdgeInsets.only(right: 8),
-                    height: 8,
+                    height: 6,
                     width: _pageIndex == index ? 24 : 8,
                     decoration: BoxDecoration(
                       color: _pageIndex == index
-                          ? Colors.white
-                          : Colors.white.withOpacity(0.4),
+                          ? accentColor
+                          : accentColor.withOpacity(0.4),
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
-              // Bouton suivant / terminer
+              const SizedBox(height: 50),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
+                  backgroundColor: accentColor,
+                  foregroundColor: bgColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -117,28 +120,42 @@ class OnBoardingContent extends StatelessWidget {
     required this.image,
     required this.title,
     required this.description,
+    required this.textColor,
   });
 
   final String image, title, description;
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Spacer(),
+        const Spacer(),
         Flexible(
           flex: 3,
           child: Image.asset(
             image,
             fit: BoxFit.contain,
             errorBuilder: (context, error, stackTrace) =>
-            const Icon(Icons.broken_image, color: Colors.white),
+                Icon(Icons.broken_image, color: textColor),
           ),
         ),
-        Spacer(),
-        Text(title, textAlign: TextAlign.center),
-        Spacer(),
-        Text(description),
+        const Spacer(),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: textColor,
+          ),
+        ),
+        const Spacer(),
+        Text(
+          description,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 16, color: textColor),
+        ),
       ],
     );
   }
