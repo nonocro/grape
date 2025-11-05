@@ -74,7 +74,7 @@ class MainApp extends StatelessWidget {
       routes: {
         RouteNames.splash: (context) => SplashScreen(onLoad: AppInitializer.loadData),
         RouteNames.auth: (context) => AuthGate(),
-        RouteNames.home: (context) => HomePage(), // '/home'
+        RouteNames.home: (context) => Home(), // '/home'
         RouteNames.onboarding: (context) => Onboarding() // '/onboarding'
       },    );
   }

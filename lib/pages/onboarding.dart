@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../theme/app_colors_extension.dart';
 import '../utils/constants.dart';
@@ -26,6 +27,13 @@ class _OnboardingState extends State<Onboarding> {
     super.dispose();
   }
 
+  Future<void> _completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(kOnboardingCompletedKey, true);
+    if (!mounted) return;
+    Navigator.pushReplacementNamed(context, RouteNames.home);
+  }
+
   void _nextPage() {
     if (_pageIndex < onBoardingData.length - 1) {
       _pageController.nextPage(
@@ -33,7 +41,7 @@ class _OnboardingState extends State<Onboarding> {
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.pushReplacementNamed(context, RouteNames.home);
+      _completeOnboarding();
     }
   }
 
