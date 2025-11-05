@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_colors_extension.dart';
+import '../utils/constants.dart';
 
 class Onboarding extends StatefulWidget {
   const Onboarding({super.key});
@@ -32,8 +33,7 @@ class _OnboardingState extends State<Onboarding> {
         curve: Curves.easeInOut,
       );
     } else {
-      // Ici tu peux naviguer vers ton écran principal (home / login)
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacementNamed(context, RouteNames.home); // futur Login ?
     }
   }
 
@@ -44,7 +44,7 @@ class _OnboardingState extends State<Onboarding> {
     return Scaffold(
       backgroundColor:
           Theme.of(context).extension<AppColorsExtension>()?.backgroundColor ??
-          Colors.black,
+          Colors.white,
       body: SafeArea(
         child: Padding(
           padding: EdgeInsets.all(16.0),

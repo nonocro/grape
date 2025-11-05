@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:grape/pages/home.dart';
-import 'package:grape/services/wine.dart';
+import 'package:grape/pages/onboarding.dart';
 import 'package:grape/theme/app_colors_extension.dart';
+import 'package:grape/utils/constants.dart';
 import 'components/splash_screen.dart';
+import 'utils/app_initializer.dart' show AppInitializer;
 
-const int primaryValue = 0xFF781818; 
+const int primaryValue = 0xFF781818;
 const Color primaryColor = Color(primaryValue);
 
 const MaterialColor customSwatch = MaterialColor(
@@ -30,9 +32,6 @@ void main() {
 class MainApp extends StatelessWidget {
   const MainApp({super.key});
 
-  Future<void> _loadData() async {
-    await fetchRedWines();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,10 +60,11 @@ class MainApp extends StatelessWidget {
           ),
         ],
       ),
-      initialRoute: '/',
+      initialRoute: RouteNames.splash,
       routes: {
-        '/': (context) => SplashScreen(loadData: _loadData),
-        '/home': (context) => HomePage(),
+        RouteNames.splash: (context) => SplashScreen(onLoad: AppInitializer.loadData),
+        RouteNames.home: (context) => HomePage(), // '/home'
+        RouteNames.onboarding: (context) => Onboarding() // '/onboarding'
       },    );
   }
 }
