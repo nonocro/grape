@@ -8,6 +8,7 @@ class RouteNames {
   static const String splash = '/';
   static const String home = '/home';
   static const String onboarding = '/onboarding';
+  static const String auth = '/auth';
 }
 
 // Couleurs (si elles ne font pas partie du système de ThemeData)
