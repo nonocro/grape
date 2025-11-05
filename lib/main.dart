@@ -1,7 +1,13 @@
+
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:grape/components/auth_gate.dart';
+import 'package:grape/firebase_options.dart';
 import 'package:grape/pages/home.dart';
 import 'package:grape/pages/onboarding.dart';
 import 'package:grape/theme/app_colors_extension.dart';
+import 'package:grape/viewmodels/home_viewmodel.dart';
+import 'package:provider/provider.dart';
 import 'package:grape/utils/constants.dart';
 import 'components/splash_screen.dart';
 import 'utils/app_initializer.dart' show AppInitializer;
@@ -25,7 +31,11 @@ const MaterialColor customSwatch = MaterialColor(
   },
 );
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MainApp());
 }
 
@@ -63,6 +73,7 @@ class MainApp extends StatelessWidget {
       initialRoute: RouteNames.splash,
       routes: {
         RouteNames.splash: (context) => SplashScreen(onLoad: AppInitializer.loadData),
+        RouteNames.auth: (context) => AuthGate(),
         RouteNames.home: (context) => HomePage(), // '/home'
         RouteNames.onboarding: (context) => Onboarding() // '/onboarding'
       },    );
