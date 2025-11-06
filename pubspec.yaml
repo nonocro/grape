@@ -38,9 +38,9 @@ flutter:
   
   fonts:
   
-    - family: ClimateCrisis
+    - family: DM_Serif_Text
       fonts:
-        - asset: assets/fonts/ClimateCrisis/ClimateCrisis.ttf
+        - asset: assets/fonts/DM_Serif_Text/DMSerifText-Regular.ttf
     - family: Inter
       fonts:
         - asset: assets/fonts/Inter/Inter.ttf

@@ -1,38 +1,31 @@
 import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:grape/services/wine_storage_service.dart';
-import '../models/wine.dart';
 import 'dart:math';
-
+import 'package:flutter/services.dart' show rootBundle;
+import '../models/wine.dart';
+import 'wine_storage_service.dart';
 
 class WineOfTheDayService {
-  final storage = WineStorageService();
+  final WineStorageService _storage = WineStorageService();
 
-
-  Future<Wine> pickWineOfTheDay() async {
-    final String response = await rootBundle.loadString('assets/data/wines.json');
+  Future<Wine> getWineOfTheDay() async {
+    final String response = await rootBundle.loadString('assets/data/data.json');
     final List<dynamic> jsonList = jsonDecode(response);
-
     final wines = jsonList.map((json) => Wine.fromJson(json)).toList();
-    final wineId = Random().nextInt(wines.length);
-    await storage.saveWineOfTheDay(wineId);
-    return wines.firstWhere((wine) => wine.id == wineId);
-  }
 
-  Future<Wine> getSavedWineOfTheDay() async {
-    Wine wineOfTheDay;
-    final wineId = await storage.getWineOfTheDayId();
-    if (wineId == null) {
-      wineOfTheDay = await pickWineOfTheDay();
-    } else {
-      final String response = await rootBundle.loadString('assets/data/wines.json');
-      final List<dynamic> jsonList = jsonDecode(response);
-      final wines = jsonList.map((json) => Wine.fromJson(json)).toList();
+    final history = await _storage.getWineHistory();
 
-      wineOfTheDay = wines.firstWhere((wine) => wine.id == wineId);
+    // Filtrer les vins déjà tirés
+    final availableWines = wines.where((w) => !history.contains(w.id)).toList();
+
+    if (availableWines.isEmpty) {
+      await _storage.clearHistory();
+      return getWineOfTheDay();
     }
-    return wineOfTheDay;
+
+    final randomWine = availableWines[Random().nextInt(availableWines.length)];
+
+    await _storage.saveWineOfTheDay(randomWine);
+
+    return randomWine;
   }
-
-
 }

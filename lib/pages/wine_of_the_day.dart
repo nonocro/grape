@@ -1,21 +1,168 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import '../models/wine.dart';
+import '../services/wine_of_the_day.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 
-class WineOfTheDay extends StatelessWidget {
+
+class WineOfTheDay extends StatefulWidget {
   const WineOfTheDay({super.key});
 
   @override
+  State<WineOfTheDay> createState() => _WineOfTheDayState();
+}
+
+class _WineOfTheDayState extends State<WineOfTheDay>
+    with TickerProviderStateMixin {
+  final wineService = WineOfTheDayService();
+  Wine? currentWine;
+  bool isLoading = true;
+
+  late AnimationController _verticalController;
+  late AnimationController _horizontalController;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWine();
+
+    // Animation verticale
+    _verticalController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+
+    // Animation horizontale
+    _horizontalController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat();
+  }
+
+  Future<void> _loadWine() async {
+    final wine = await wineService.getWineOfTheDay();
+    setState(() {
+      currentWine = wine;
+      isLoading = false;
+    });
+
+    // Lancer l’animation verticale après avoir chargé le vin
+    _verticalController.forward();
+  }
+
+  @override
+  void dispose() {
+    _verticalController.dispose();
+    _horizontalController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.extension<AppColorsExtension>();
+
     return Scaffold(
-      backgroundColor: Theme.of(context).extension<AppColorsExtension>()?.backgroundColor ?? Colors.black,
-      body: Center(
-        child: TextButton(onPressed: () {}, child: Text(
-          'Vin du jour',
-          style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                color: Theme.of(context).primaryColor,
-              ),
-        )),
-      ),
+      backgroundColor: Colors.white,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : AnimatedBuilder(
+              animation:
+                  Listenable.merge([_verticalController, _horizontalController]),
+              builder: (context, child) {
+                return ClipPath(
+                  clipper: AnimatedWavyClipper(
+                    progress: _verticalController.value,
+                    phase: _horizontalController.value * 2 * pi,
+                  ),
+                    child: Container(
+                      color: colors!.accentColor,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 40.0, right: 40.0),
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Padding(
+                            padding: const EdgeInsets.only(top: 110.0),
+                            child:  Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Vin du jour',
+                                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                                    color: colors.cardColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  'Revenez ici chaque jour pour découvrir un nouveau vin ! 🍇🍷',
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 40),
+                                // Text(
+                                //   'Le vin du ${DateTime.now().day}/${DateTime.now().month}',
+                                //   style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                                //     color: Colors.black,
+                                //     fontWeight: FontWeight.w500,
+
+                                //   ),
+                                // ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                );
+              },
+            ),
     );
   }
+}
+
+class AnimatedWavyClipper extends CustomClipper<Path> {
+  final double progress;
+  final double phase;
+  final int waves;
+  final double amplitude;
+
+  AnimatedWavyClipper({
+    required this.progress,
+    required this.phase,
+    this.waves = 2,
+    this.amplitude = 20.0,
+  });
+
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    final double waveProgress = progress * 0.90;
+    path.moveTo(0, size.height);
+
+    final Random rand = Random();
+
+    for (double x = 0; x <= size.width; x++) {
+      // Base sinusoïde
+      double y = size.height * (1 - waveProgress) +
+          sin((x / size.width * waves * pi * waveProgress) + phase) * amplitude;
+
+      // Ajout d'une irrégularité locale
+      y += (rand.nextDouble() - 0.5) * 2; // variation aléatoire subtile
+
+      path.lineTo(x, y);
+    }
+
+    path.lineTo(size.width, size.height);
+    path.lineTo(0, size.height);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant AnimatedWavyClipper oldClipper) => true;
 }
