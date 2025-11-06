@@ -3,9 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:grape/components/auth_gate.dart';
 import 'package:grape/firebase_options.dart';
+import 'package:grape/pages/base_page.dart';
 import 'package:grape/pages/onboarding.dart';
 import 'package:grape/theme/app_colors_extension.dart';
-import 'package:grape/viewmodels/home_viewmodel.dart';
+import 'package:grape/viewmodels/app_viewmodel.dart';
 import 'package:provider/provider.dart';
 import 'package:grape/utils/constants.dart';
 import 'components/splash_screen.dart';
@@ -35,17 +36,17 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(Home());
+  runApp(GrapeApp());
 }
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class GrapeApp extends StatelessWidget {
+  const GrapeApp ({super.key});
 
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => HomeViewModel(),
+      create: (_) => AppViewModel(),
       child: MaterialApp(
         title: 'Grape',
         theme: ThemeData(
@@ -75,7 +76,7 @@ class Home extends StatelessWidget {
         routes: {
           RouteNames.splash: (context) => SplashScreen(onLoad: AppInitializer.loadData),
           RouteNames.auth: (context) => AuthGate(),
-          RouteNames.home: (context) => Home(), // '/home'
+          RouteNames.home: (context) => BasePage(), // '/home'
           RouteNames.onboarding: (context) => Onboarding() // '/onboarding'
         },
       ),
