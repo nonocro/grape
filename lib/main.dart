@@ -1,16 +1,14 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grape/components/auth_gate.dart';
+import 'package:grape/components/splash_screen.dart';
 import 'package:grape/firebase_options.dart';
 import 'package:grape/pages/base_page.dart';
 import 'package:grape/pages/onboarding.dart';
 import 'package:grape/theme/app_colors_extension.dart';
-import 'package:grape/viewmodels/app_viewmodel.dart';
-import 'package:provider/provider.dart';
 import 'package:grape/utils/constants.dart';
-import 'components/splash_screen.dart';
-import 'utils/app_initializer.dart' show AppInitializer;
 
 const int primaryValue = 0xFF781818;
 const Color primaryColor = Color(primaryValue);
@@ -36,7 +34,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(GrapeApp());
+  runApp(const ProviderScope(child: GrapeApp()));
 }
 
 class GrapeApp extends StatelessWidget {
@@ -45,9 +43,7 @@ class GrapeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AppViewModel(),
-      child: MaterialApp(
+    return MaterialApp(
         title: 'Grape',
         theme: ThemeData(
           primarySwatch: customSwatch,
@@ -74,12 +70,11 @@ class GrapeApp extends StatelessWidget {
         ),
         initialRoute: RouteNames.splash,
         routes: {
-          RouteNames.splash: (context) => SplashScreen(onLoad: AppInitializer.loadData),
+          RouteNames.splash: (context) => SplashScreen(),
           RouteNames.auth: (context) => AuthGate(),
-          RouteNames.home: (context) => BasePage(), // '/home'
-          RouteNames.onboarding: (context) => Onboarding() // '/onboarding'
+          RouteNames.home: (context) => BasePage(), // base avec la bottomNavBar
+          RouteNames.onboarding: (context) => Onboarding()
         },
-      ),
     );
   }
 }

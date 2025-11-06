@@ -20,3 +20,15 @@ Future<List<Wine>> fetchRedWines() async {
   }
 }
 
+List<Wine> filterWines(List<Wine> wines, String? country, String? cityAndRegion) {
+  if (cityAndRegion != null && cityAndRegion.isNotEmpty) {
+    final byCityOrRegion = wines.where((wine) => wine.location.contains(cityAndRegion)).toList();
+    if (byCityOrRegion.isNotEmpty) return byCityOrRegion;
+  }
+  if (country != null && country.isNotEmpty) {
+    final byCountry = wines.where((wine) => wine.location.contains(country)).toList();
+    if (byCountry.isNotEmpty) return byCountry;
+  }
+  return wines;
+}
+
