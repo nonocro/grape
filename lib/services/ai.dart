@@ -11,6 +11,18 @@ Future<WineDetails> getWineDetails(String wineName) async {
   }
   
   await dotenv.load(fileName: ".env");
+  bool useAi = dotenv.env['USE_AI'] == 'true';
+  if (!useAi) {
+    return WineDetails(
+      description: "description",
+      grapeVariety: "grapeVariety",
+      foodPairings: "foodPairings",
+      alcoolPercentage: "12%",
+      agingPotential: "agingPotential",
+      servingTemperature: "servingTemperature",
+    );
+  }
+
   String apiKey = dotenv.env['GEMINI_AI_TOKEN'] ?? '';
   if (apiKey.isEmpty) {
     throw Exception('GEMINI_AI_TOKEN not set. Run with --dart-define=GEMINI_AI_TOKEN=your_key');
@@ -21,8 +33,9 @@ Future<WineDetails> getWineDetails(String wineName) async {
       '2. The grape variety used, '
       '3. The recommended food pairings, '
       '4. The alcohol percentage, '
-      '5. The volume '
-      'Format the response as a JSON object with keys: description, grape_variety, food_pairings, serving_temperature, aging_potential.';
+      '5. The aging potential '
+      '6. The serving temperature '
+      'Format the response as a JSON object with keys: description, grape_variety, food_pairings, alcool_percentage, aging_potential, serving_temperature.';
 
   final url = Uri.parse('https://generativelanguage.googleapis.com/v1/models/$model:generateContent?key=$apiKey');
 

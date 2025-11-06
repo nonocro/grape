@@ -2,15 +2,17 @@ class WineDetails {
   final String description;
   final String grapeVariety;
   final String foodPairings;
-  final String servingTemperature;
+  final String alcoolPercentage;
   final String agingPotential;
+  final String servingTemperature;
 
   WineDetails({
     required this.description,
     required this.grapeVariety,
     required this.foodPairings,
-    required this.servingTemperature,
+    required this.alcoolPercentage,
     required this.agingPotential,
+    required this.servingTemperature,
   });
 
   factory WineDetails.fromJson(Map<String, dynamic> json) {
@@ -25,8 +27,9 @@ class WineDetails {
       description: toString(json['description']),
       grapeVariety: toString(json['grape_variety']),
       foodPairings: toString(json['food_pairings']),
-      servingTemperature: toString(json['serving_temperature']),
+      alcoolPercentage: toString(json['alcool_percentage']),
       agingPotential: toString(json['aging_potential']),
+      servingTemperature: toString(json['serving_temperature'])
     );
   }
 }

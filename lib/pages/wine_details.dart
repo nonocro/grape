@@ -204,8 +204,8 @@ class _WineDetailsPageState extends State<WineDetailsPage> {
                                       ),
                                     ),
                                     const SizedBox(height: 4),
-                                    const Text(
-                                      '13.5%',
+                                    Text(
+                                      details.alcoolPercentage,
                                       style: TextStyle(
                                         color: Colors.black87,
                                         fontSize: 16,
