@@ -18,7 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late Future<List<Wine>> _wines;
   String? _userCountry;
-  String? _userRegion;
+  String? _userCityAndRegion;
   AppColorsExtension? _theme;
 
   @override
@@ -52,22 +52,21 @@ class _HomePageState extends State<HomePage> {
     String country = (placemarks != null && placemarks.isNotEmpty && placemarks.first.country != null)
         ? placemarks.first.country!
         : '';
-    String region = (placemarks != null && placemarks.isNotEmpty && placemarks.first.administrativeArea != null)
-        ? placemarks.first.administrativeArea!
-        : (placemarks != null && placemarks.isNotEmpty && placemarks.first.locality != null)
-          ? placemarks.first.locality!
-          : '';
+
+    String cityAndRegion = (placemarks != null && placemarks.isNotEmpty && placemarks.first.locality != null)
+        ? placemarks.first.locality!
+        : '';
     setState(() {
-      _userRegion = region;
+      _userCityAndRegion = cityAndRegion;
       _userCountry = country;
       _wines = fetchRedWines();
     });
   }
 
-  List<Wine> filterWines(List<Wine> wines, String? country, String? region) {
-    if (country != null && country.isNotEmpty && region != null && region.isNotEmpty) {
-      final byCountryAndRegion = wines.where((wine) => wine.location.contains(country) && wine.location.contains(region)).toList();
-      if (byCountryAndRegion.isNotEmpty) return byCountryAndRegion;
+  List<Wine> filterWines(List<Wine> wines, String? country, String? cityAndRegion) {
+    if (cityAndRegion != null && cityAndRegion.isNotEmpty) {
+      final byCityOrRegion = wines.where((wine) => wine.location.contains(cityAndRegion)).toList();
+      if (byCityOrRegion.isNotEmpty) return byCityOrRegion;
     }
     if (country != null && country.isNotEmpty) {
       final byCountry = wines.where((wine) => wine.location.contains(country)).toList();
@@ -96,7 +95,7 @@ class _HomePageState extends State<HomePage> {
             return Center(child: Text('Erreur: ${snapshot.error}'));
           } else if (snapshot.hasData) {
             final wines = snapshot.data!;
-            var nearWines = filterWines(wines, _userCountry, _userRegion);
+            var nearWines = filterWines(wines, _userCountry, _userCityAndRegion);
             var limitedNearWines = nearWines.take(10).toList();
             var limitedNearWines2 = wines.skip(10).take(10).toList();
             final bestWine = wines[Random().nextInt(wines.length)];
@@ -136,7 +135,7 @@ class _HomePageState extends State<HomePage> {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
-                            'Vins de ${_userCountry != null && _userCountry!.isNotEmpty ? _userCountry! : 'votre pays'}',
+                            'Vins de chez vous',
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
