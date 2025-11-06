@@ -48,41 +48,41 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => HomeViewModel(),
-      child: MaterialApp(
-        title: 'Grape',
-        theme: ThemeData(
-          primarySwatch: customSwatch,
-          scaffoldBackgroundColor: Colors.black,
-          fontFamily: 'Inter',
-          textTheme: TextTheme(
-            displayLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-            displayMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-            displaySmall: TextStyle(fontFamily: 'ClimateCrisis'),
-            headlineLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-            headlineMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-            headlineSmall: TextStyle(fontFamily: 'ClimateCrisis'),
-            titleLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-            titleMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-            titleSmall: TextStyle(fontFamily: 'ClimateCrisis'),
-          ),
-          extensions: const <ThemeExtension<dynamic>>[
-            AppColorsExtension(
-              backgroundColor: Color(0xFFFAFAFA),
-              cardColor: customSwatch,
-              accentColor: Color(0xFFE5C65D),
-            ),
-          ],
+    return MaterialApp(
+      title: 'Grape',
+      theme: ThemeData(
+        primarySwatch: customSwatch,
+        scaffoldBackgroundColor: Colors.black,
+        fontFamily: 'Inter',
+        textTheme: TextTheme(
+          displayLarge: TextStyle(fontFamily: 'DM_Serif_Text', fontSize: 50),
+          displayMedium: TextStyle(fontFamily: 'DM_Serif_Text', fontSize: 35),
+          displaySmall: TextStyle(fontFamily: 'DM_Serif_Text', fontSize: 30),
+          headlineLarge: TextStyle(fontFamily: 'DM_Serif_Text'),
+          headlineMedium: TextStyle(fontFamily: 'DM_Serif_Text'),
+          headlineSmall: TextStyle(fontFamily: 'DM_Serif_Text'),
+          titleLarge: TextStyle(fontFamily: 'DM_Serif_Text'),
+          titleMedium: TextStyle(fontFamily: 'DM_Serif_Text'),
+          titleSmall: TextStyle(fontFamily: 'DM_Serif_Text'),
+          bodyLarge: TextStyle(fontFamily: 'Inter', fontSize: 18),
+          bodyMedium: TextStyle(fontFamily: 'Inter', fontSize: 16),
+          bodySmall: TextStyle(fontFamily: 'Inter', fontSize: 14),
         ),
-        initialRoute: RouteNames.splash,
-        routes: {
-          RouteNames.splash: (context) => SplashScreen(onLoad: AppInitializer.loadData),
-          RouteNames.auth: (context) => AuthGate(),
-          RouteNames.home: (context) => Home(), // '/home'
-          RouteNames.onboarding: (context) => Onboarding() // '/onboarding'
-        },
+        extensions: const <ThemeExtension<dynamic>>[
+          AppColorsExtension(
+            backgroundColor: Color(0xFFFAFAFA),
+            cardColor: customSwatch,
+            accentColor: Color(0xFFE5C65D),
+          ),
+        ],
       ),
+      initialRoute: RouteNames.splash,
+      routes: {
+        RouteNames.splash: (context) => SplashScreen(onLoad: AppInitializer.loadData),
+        RouteNames.auth: (context) => AuthGate(),
+        RouteNames.home: (context) => Home(), // '/home'
+        RouteNames.onboarding: (context) => Onboarding() // '/onboarding'
+      },
     );
   }
 }
