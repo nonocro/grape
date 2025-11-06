@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grape/components/auth_gate.dart';
 import 'package:grape/components/splash_screen.dart';
 import 'package:grape/firebase_options.dart';
+import 'package:grape/pages/base_page.dart';
 import 'package:grape/pages/onboarding.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 import 'package:grape/utils/constants.dart';
@@ -33,46 +34,47 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const ProviderScope(child: Home()));
+  runApp(const ProviderScope(child: GrapeApp()));
 }
 
-class Home extends StatelessWidget {
-  const Home({super.key});
+class GrapeApp extends StatelessWidget {
+  const GrapeApp ({super.key});
+
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Grape',
-      theme: ThemeData(
-        primarySwatch: customSwatch,
-        scaffoldBackgroundColor: Colors.black,
-        fontFamily: 'Inter',
-        textTheme: const TextTheme(
-          displayLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-          displayMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-          displaySmall: TextStyle(fontFamily: 'ClimateCrisis'),
-          headlineLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-          headlineMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-          headlineSmall: TextStyle(fontFamily: 'ClimateCrisis'),
-          titleLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-          titleMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-          titleSmall: TextStyle(fontFamily: 'ClimateCrisis'),
-        ),
-        extensions: const <ThemeExtension<dynamic>>[
-          AppColorsExtension(
-            backgroundColor: Color(0xFFFAFAFA),
-            cardColor: customSwatch,
-            accentColor: Color(0xFFE5C65D),
+        title: 'Grape',
+        theme: ThemeData(
+          primarySwatch: customSwatch,
+          scaffoldBackgroundColor: Colors.black,
+          fontFamily: 'Inter',
+          textTheme: TextTheme(
+            displayLarge: TextStyle(fontFamily: 'ClimateCrisis'),
+            displayMedium: TextStyle(fontFamily: 'ClimateCrisis'),
+            displaySmall: TextStyle(fontFamily: 'ClimateCrisis'),
+            headlineLarge: TextStyle(fontFamily: 'ClimateCrisis'),
+            headlineMedium: TextStyle(fontFamily: 'ClimateCrisis'),
+            headlineSmall: TextStyle(fontFamily: 'ClimateCrisis'),
+            titleLarge: TextStyle(fontFamily: 'ClimateCrisis'),
+            titleMedium: TextStyle(fontFamily: 'ClimateCrisis'),
+            titleSmall: TextStyle(fontFamily: 'ClimateCrisis'),
           ),
-        ],
-      ),
-      initialRoute: RouteNames.splash,
-      routes: {
-        RouteNames.splash: (context) => SplashScreen(),
-        RouteNames.auth: (context) => AuthGate(),
-        RouteNames.home: (context) => const Home(),
-        RouteNames.onboarding: (context) => const Onboarding(),
-      },
+          extensions: const <ThemeExtension<dynamic>>[
+            AppColorsExtension(
+              backgroundColor: Color(0xFFFAFAFA),
+              cardColor: customSwatch,
+              accentColor: Color(0xFFE5C65D),
+            ),
+          ],
+        ),
+        initialRoute: RouteNames.splash,
+        routes: {
+          RouteNames.splash: (context) => SplashScreen(),
+          RouteNames.auth: (context) => AuthGate(),
+          RouteNames.home: (context) => BasePage(), // base avec la bottomNavBar
+          RouteNames.onboarding: (context) => Onboarding()
+        },
     );
   }
 }
