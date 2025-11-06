@@ -1,10 +1,6 @@
-
-
-
-
-
 import 'package:flutter/material.dart';
 import 'package:grape/pages/home.dart';
+import 'package:grape/pages/profile_page.dart';
 import 'package:grape/pages/wine_location_page.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 
@@ -21,6 +17,7 @@ class _BasePageState extends State<BasePage> {
   final List<Widget> _pages = const [
     HomePage(),
     WineLocationPage(),
+    ProfilePage(),
   ];
 
   void _onItemTapped(int index) {
@@ -47,8 +44,7 @@ class _BasePageState extends State<BasePage> {
             label: 'Accueil',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: "Localisation"),
-
-        
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profil"),
         ],
       ),
     );
