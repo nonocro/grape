@@ -1,42 +1,79 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:grape/providers/location_provider.dart';
-import 'package:grape/providers/wine_provider.dart';
-import 'package:grape/services/location_service.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 import 'package:grape/services/wine.dart';
+import 'package:grape/models/wine.dart';
 import 'package:grape/components/homepage/small_wine_card.dart';
 import 'package:grape/components/homepage/big_wine_card.dart';
-import 'dart:math';
+import "dart:math";
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
-class HomePage extends ConsumerStatefulWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  ConsumerState<HomePage> createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomePageState extends State<HomePage> {
+  late Future<List<Wine>> _wines;
+  String? _userCountry;
+  String? _userCityAndRegion;
   AppColorsExtension? _theme;
 
   @override
   void initState() {
     super.initState();
-    askLocationAndFetch(ref);
+    _wines = fetchRedWines();
+    _askLocationAndFetch();
   }
-  
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _theme = Theme.of(context).extension<AppColorsExtension>();
   }
 
+  Future<void> _askLocationAndFetch() async {
+    LocationPermission permission = await Geolocator.requestPermission();
+    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+      return;
+    }
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
+    List<Placemark>? placemarks;
+    try {
+      placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+    } catch (e) {
+      placemarks = null;
+    }
+    String country = (placemarks != null && placemarks.isNotEmpty && placemarks.first.country != null)
+        ? placemarks.first.country!
+        : '';
+
+    String cityAndRegion = (placemarks != null && placemarks.isNotEmpty && placemarks.first.locality != null)
+        ? placemarks.first.locality!
+        : '';
+    setState(() {
+      _userCityAndRegion = cityAndRegion;
+      _userCountry = country;
+    });
+  }
+
+  List<Wine> filterWines(List<Wine> wines, String? country, String? cityAndRegion) {
+    if (cityAndRegion != null && cityAndRegion.isNotEmpty) {
+      final byCityOrRegion = wines.where((wine) => wine.location.contains(cityAndRegion)).toList();
+      if (byCityOrRegion.isNotEmpty) return byCityOrRegion;
+    }
+    if (country != null && country.isNotEmpty) {
+      final byCountry = wines.where((wine) => wine.location.contains(country)).toList();
+      if (byCountry.isNotEmpty) return byCountry;
+    }
+    return wines;
+  }
+
   @override
   Widget build(BuildContext context) {
     final bgColor = _theme?.backgroundColor ?? Colors.white;
-    final wineList = ref.watch(wineListProvider);
-    final userCountry = ref.watch(userCountryProvider);
-    final userCityAndRegion = ref.watch(userCityAndRegionProvider);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -45,19 +82,26 @@ class _HomePageState extends ConsumerState<HomePage> {
         elevation: 0,
         toolbarHeight: 10,
       ),
-      body: wineList.when(
-        data: (wines) {
-            final nearWines = filterWines(wines, userCountry, userCityAndRegion);
+      body: FutureBuilder<List<Wine>>(
+        future: _wines,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Erreur: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            final wines = snapshot.data!;
+            var nearWines = filterWines(wines, _userCountry, _userCityAndRegion);
             var limitedNearWines = nearWines.take(10).toList();
             var limitedNearWines2 = wines.skip(10).take(10).toList();
             final bestWine = wines[Random().nextInt(wines.length)];
 
             if (limitedNearWines.isEmpty && limitedNearWines2.isEmpty) {
-              final filteredWines = (userCountry != null && userCountry.isNotEmpty)
-                ? wines.where((wine) => wine.location.contains(userCountry)).toList()
+              nearWines = (_userCountry != null && _userCountry!.isNotEmpty)
+                ? wines.where((wine) => wine.location.contains(_userCountry!)).toList()
                 : wines;
 
-              limitedNearWines = filteredWines.take(10).toList();
+              limitedNearWines = nearWines.take(10).toList();
             }
 
             return SingleChildScrollView(
@@ -107,7 +151,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('View all',
+                              Text(
+                                'View all',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -172,7 +217,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('View all',
+                              Text(
+                                'View all',
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -212,9 +258,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ],
               ),
             );
+          } else {
+            return const Center(child: Text('Aucun vin disponible.'));
+          }
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(child: Text('Erreur: $error')),
       ),
     );
   }
