@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:grape/theme/app_colors_extension.dart';
 import 'package:grape/models/wine.dart';
 import 'package:grape/pages/wine_details.dart';
 
 class BigWineCard extends StatelessWidget {
   final Wine wine;
-  const BigWineCard({required this.wine, super.key});
+  final Color cardColor;
+  final Color textColor;
+  
+  const BigWineCard({super.key, required this.wine, required this.cardColor, required this.textColor});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class BigWineCard extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: const Color(0xFFFAFAFA),
+          color: Colors.white,
         ),
         child: Stack(
           alignment: Alignment.bottomCenter,
@@ -30,7 +32,7 @@ class BigWineCard extends StatelessWidget {
             Container(
               height: 170,
               decoration: BoxDecoration(
-                color: Theme.of(context).extension<AppColorsExtension>()?.cardColor,
+                color: cardColor,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16), bottom: Radius.circular(16)),
               ),
             ),
@@ -55,9 +57,9 @@ class BigWineCard extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         wine.winery,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white70,
+                          color: textColor,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -65,9 +67,9 @@ class BigWineCard extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         wine.location,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white70,
+                          color: textColor,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -75,9 +77,9 @@ class BigWineCard extends StatelessWidget {
                       const SizedBox(height: 12),
                       Text(
                         'Note: ${wine.rating.average} (${wine.rating.reviews})',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Colors.white,
+                          color: textColor,
                         ),
                       ),
                     ],

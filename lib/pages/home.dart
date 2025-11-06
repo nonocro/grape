@@ -78,9 +78,16 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.black26,
+        backgroundColor: _theme?.accentColor ?? Colors.black26,
         elevation: 0,
-        toolbarHeight: 10,
+        title: const Text(
+          'Accueil',
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: FutureBuilder<List<Wine>>(
         future: _wines,
@@ -105,7 +112,7 @@ class _HomePageState extends State<HomePage> {
             }
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 32),
+              padding: const EdgeInsets.only(top: 30, bottom: 32),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -121,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
-                    BigWineCard(wine: bestWine),
+                    BigWineCard(wine: bestWine, cardColor: _theme!.cardColor, textColor: Colors.white),
                   ],
                   const SizedBox(height: 50),
                   Row(
