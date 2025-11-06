@@ -32,9 +32,7 @@ class _BasePageState extends State<BasePage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor:
-            Theme.of(context).extension<AppColorsExtension>()?.accentColor ??
-            Colors.amber,
+        selectedItemColor: Theme.of(context).primaryColor,
         unselectedItemColor: Colors.grey,
         backgroundColor: Colors.white,
         items: const [

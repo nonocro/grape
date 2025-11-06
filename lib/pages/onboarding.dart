@@ -47,10 +47,8 @@ class _OnboardingState extends State<Onboarding> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-
     final bgColor = Colors.white;
-    final accentColor = colors?.accentColor ?? Theme.of(context).primaryColor;
+    final accentColor = Theme.of(context).primaryColor;
     final textColor = Colors.black; // ou Colors.white si le bg est foncé
 
     return Scaffold(
