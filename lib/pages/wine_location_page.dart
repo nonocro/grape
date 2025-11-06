@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:grape/models/wine.dart';
@@ -6,14 +7,14 @@ import 'package:grape/services/wine.dart';
 import 'package:grape/components/homepage/small_wine_card.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 
-class WineLocationPage extends StatefulWidget {
+class WineLocationPage extends ConsumerStatefulWidget {
   const WineLocationPage({super.key});
 
   @override
-  State<WineLocationPage> createState() => _WineLocationPageState();
+  ConsumerState<WineLocationPage> createState() => _WineLocationPageState();
 }
 
-class _WineLocationPageState extends State<WineLocationPage> {
+class _WineLocationPageState extends ConsumerState<WineLocationPage> {
   late Future<List<Wine>> _winesFuture;
   String? _userCountry;
   String? _userRegion;
@@ -21,7 +22,8 @@ class _WineLocationPageState extends State<WineLocationPage> {
   @override
   void initState() {
     super.initState();
-    _winesFuture = _loadData();
+      _winesFuture = _loadData();
+
   }
 
   Future<List<Wine>> _loadData() async {

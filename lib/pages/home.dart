@@ -23,6 +23,11 @@ class _HomePageState extends ConsumerState<HomePage> {
   void initState() {
     super.initState();
     askLocationAndFetch(ref);
+  }
+  
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _theme = Theme.of(context).extension<AppColorsExtension>();
   }
 
