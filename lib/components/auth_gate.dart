@@ -3,7 +3,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:grape/pages/home.dart';
 import 'package:grape/pages/sign_in.dart';
+import 'package:grape/utils/app_initializer.dart';
 
+
+/**
+ * Détermine si l'utilisateur est authentifié ou non
+ * redirige vers la page de connexion ou la page d'accueil en conséquence
+ */
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 

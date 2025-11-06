@@ -1,4 +1,7 @@
 // lib/utils/app_initializer.dart
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/widgets.dart';
+import 'package:grape/pages/sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'constants.dart';
 import '../services/wine.dart';
@@ -11,10 +14,14 @@ class AppInitializer {
   }
 
   /// Détermine la route à afficher après le Splash
-  static Future<String> getInitialRoute() async {
-    final prefs = await SharedPreferences.getInstance();
-    final bool hasCompletedOnboarding =
+  static Future<String> getInitialRoute({
+    required SharedPreferences prefs,
+    required FirebaseAuth auth,
+  }) async {
+    final hasCompletedOnboarding =
         prefs.getBool(kOnboardingCompletedKey) ?? false;
-    return hasCompletedOnboarding ? RouteNames.home : RouteNames.onboarding;
+
+    if (!hasCompletedOnboarding) return RouteNames.onboarding;
+    return RouteNames.auth;
   }
 }

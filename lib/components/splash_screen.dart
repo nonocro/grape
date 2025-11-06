@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grape/utils/constants.dart';
 import 'dart:async';
 import 'package:lottie/lottie.dart';
 import '../utils/app_initializer.dart';
@@ -32,8 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
 
-    final nextRoute = await AppInitializer.getInitialRoute();
-    Navigator.of(context).pushReplacementNamed(nextRoute);
+    Navigator.of(context).pushReplacementNamed(RouteNames.onboarding);
   }
 
   @override
