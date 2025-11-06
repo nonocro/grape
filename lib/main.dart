@@ -1,15 +1,13 @@
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grape/components/auth_gate.dart';
+import 'package:grape/components/splash_screen.dart';
 import 'package:grape/firebase_options.dart';
 import 'package:grape/pages/onboarding.dart';
 import 'package:grape/theme/app_colors_extension.dart';
-import 'package:grape/viewmodels/home_viewmodel.dart';
-import 'package:provider/provider.dart';
 import 'package:grape/utils/constants.dart';
-import 'components/splash_screen.dart';
-import 'utils/app_initializer.dart' show AppInitializer;
 
 const int primaryValue = 0xFF781818;
 const Color primaryColor = Color(primaryValue);
@@ -35,50 +33,46 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(Home());
+  runApp(const ProviderScope(child: Home()));
 }
 
 class Home extends StatelessWidget {
   const Home({super.key});
 
-
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => HomeViewModel(),
-      child: MaterialApp(
-        title: 'Grape',
-        theme: ThemeData(
-          primarySwatch: customSwatch,
-          scaffoldBackgroundColor: Colors.black,
-          fontFamily: 'Inter',
-          textTheme: TextTheme(
-            displayLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-            displayMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-            displaySmall: TextStyle(fontFamily: 'ClimateCrisis'),
-            headlineLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-            headlineMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-            headlineSmall: TextStyle(fontFamily: 'ClimateCrisis'),
-            titleLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-            titleMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-            titleSmall: TextStyle(fontFamily: 'ClimateCrisis'),
-          ),
-          extensions: const <ThemeExtension<dynamic>>[
-            AppColorsExtension(
-              backgroundColor: Color(0xFFFAFAFA),
-              cardColor: customSwatch,
-              accentColor: Color(0xFFE5C65D),
-            ),
-          ],
+    return MaterialApp(
+      title: 'Grape',
+      theme: ThemeData(
+        primarySwatch: customSwatch,
+        scaffoldBackgroundColor: Colors.black,
+        fontFamily: 'Inter',
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(fontFamily: 'ClimateCrisis'),
+          displayMedium: TextStyle(fontFamily: 'ClimateCrisis'),
+          displaySmall: TextStyle(fontFamily: 'ClimateCrisis'),
+          headlineLarge: TextStyle(fontFamily: 'ClimateCrisis'),
+          headlineMedium: TextStyle(fontFamily: 'ClimateCrisis'),
+          headlineSmall: TextStyle(fontFamily: 'ClimateCrisis'),
+          titleLarge: TextStyle(fontFamily: 'ClimateCrisis'),
+          titleMedium: TextStyle(fontFamily: 'ClimateCrisis'),
+          titleSmall: TextStyle(fontFamily: 'ClimateCrisis'),
         ),
-        initialRoute: RouteNames.splash,
-        routes: {
-          RouteNames.splash: (context) => SplashScreen(onLoad: AppInitializer.loadData),
-          RouteNames.auth: (context) => AuthGate(),
-          RouteNames.home: (context) => Home(), // '/home'
-          RouteNames.onboarding: (context) => Onboarding() // '/onboarding'
-        },
+        extensions: const <ThemeExtension<dynamic>>[
+          AppColorsExtension(
+            backgroundColor: Color(0xFFFAFAFA),
+            cardColor: customSwatch,
+            accentColor: Color(0xFFE5C65D),
+          ),
+        ],
       ),
+      initialRoute: RouteNames.splash,
+      routes: {
+        RouteNames.splash: (context) => SplashScreen(),
+        RouteNames.auth: (context) => AuthGate(),
+        RouteNames.home: (context) => const Home(),
+        RouteNames.onboarding: (context) => const Onboarding(),
+      },
     );
   }
 }
