@@ -3,13 +3,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:grape/components/auth_gate.dart';
 import 'package:grape/firebase_options.dart';
-import 'package:grape/services/wine.dart';
+import 'package:grape/pages/onboarding.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 import 'package:grape/viewmodels/home_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:grape/utils/constants.dart';
 import 'components/splash_screen.dart';
+import 'utils/app_initializer.dart' show AppInitializer;
 
-const int primaryValue = 0xFF781818; 
+const int primaryValue = 0xFF781818;
 const Color primaryColor = Color(primaryValue);
 
 const MaterialColor customSwatch = MaterialColor(
@@ -39,9 +41,6 @@ void main() async {
 class Home extends StatelessWidget {
   const Home({super.key});
 
-  Future<void> _loadData() async {
-    await fetchRedWines();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,11 +71,12 @@ class Home extends StatelessWidget {
             ),
           ],
         ),
-        initialRoute: '/',
+        initialRoute: RouteNames.splash,
         routes: {
-          '/': (context) => SplashScreen(loadData: _loadData),
-          '/auth': (context) => AuthGate(),
-          '/home': (context) => Home(),
+          RouteNames.splash: (context) => SplashScreen(onLoad: AppInitializer.loadData),
+          RouteNames.auth: (context) => AuthGate(),
+          RouteNames.home: (context) => Home(), // '/home'
+          RouteNames.onboarding: (context) => Onboarding() // '/onboarding'
         },
       ),
     );
