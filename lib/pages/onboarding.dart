@@ -31,7 +31,7 @@ class _OnboardingState extends State<Onboarding> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(kOnboardingCompletedKey, true);
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, RouteNames.home);
+    Navigator.pushReplacementNamed(context, RouteNames.auth);
   }
 
   void _nextPage() {
