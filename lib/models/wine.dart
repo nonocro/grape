@@ -1,6 +1,6 @@
 class Wine {
   final String winery;
-  final String wine;
+  final String name;
   final Rating rating;
   final String location;
   final String image;
@@ -8,7 +8,7 @@ class Wine {
 
   Wine({
     required this.winery,
-    required this.wine,
+    required this.name,
     required this.rating,
     required this.location,
     required this.image,
@@ -18,7 +18,7 @@ class Wine {
   factory Wine.fromJson(Map<String, dynamic> json) {
     return Wine(
       winery: json['winery'] as String,
-      wine: json['wine'] as String,
+      name: json['wine'] as String,
       rating: Rating.fromJson(json['rating'] as Map<String, dynamic>),
       location: json['location'] as String,
       image: json['image'] as String,
