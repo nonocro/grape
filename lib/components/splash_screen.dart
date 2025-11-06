@@ -1,43 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:grape/providers/wine_provider.dart';
 import 'package:grape/utils/constants.dart';
 import 'dart:async';
 import 'package:lottie/lottie.dart';
-import '../utils/app_initializer.dart';
 
-class SplashScreen extends StatefulWidget {
-  final Future<void> Function() onLoad;
-  final Duration minDisplayDuration;
-
-  const SplashScreen({
-    super.key,
-    required this.onLoad,
-    this.minDisplayDuration = const Duration(seconds: 6),
-  });
+class SplashScreen extends ConsumerWidget {
+  const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(wineListProvider, (_, next) {
+      if (!next.isLoading) {
+        Navigator.of(context).pushReplacementNamed(RouteNames.onboarding);
+      }
+    });
 
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _startAppFlow();
-  }
-
-  Future<void> _startAppFlow() async {
-    await Future.wait([
-      widget.onLoad(),
-      Future.delayed(widget.minDisplayDuration),
-    ]);
-
-    if (!mounted) return;
-
-    Navigator.of(context).pushReplacementNamed(RouteNames.onboarding);
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
         child: Lottie.asset('assets/animations/wine_pour.json',
