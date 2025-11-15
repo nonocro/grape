@@ -10,6 +10,9 @@ class WineMapViewModel extends StateNotifier<AsyncValue<List<WineMarker>>> {
   final List<WineMarker> _cache = [];
   bool _isLoading = false;
 
+  // Contrôle de l'affichage du loader
+  bool showLoading = true;
+
   WineMapViewModel(this.ref) : super(const AsyncValue.data([])) {
     _loadMarkersProgressively();
   }
@@ -21,31 +24,38 @@ class WineMapViewModel extends StateNotifier<AsyncValue<List<WineMarker>>> {
     final service = WineService(ref);
     final List<Wine> wines = await service.fetchFilteredWines();
 
-    for (var wine in wines) {
+    // On active le loader au début
+    showLoading = true;
+    state = AsyncValue.data(List.from(_cache));
+
+    for (final wine in wines) {
       try {
         final List<Location> locations = await locationFromAddress(wine.location);
         if (locations.isEmpty) continue;
 
         final coords = LatLng(locations.first.latitude, locations.first.longitude);
-        final wineMarker = WineMarker(wine: wine, coords: coords);
+        _cache.add(WineMarker(wine: wine, coords: coords));
 
-        _cache.add(wineMarker);
-        print("Marker ajouté : ${wine.name} => ${coords.latitude}, ${coords.longitude}");
+        // Mise à jour progressive
         state = AsyncValue.data(List.from(_cache));
 
+        print("Marker ajouté pour ${wine.location}: ${coords.latitude}, ${coords.longitude}");
       } catch (e) {
         print("Erreur géocoding '${wine.location}': $e");
       }
     }
 
+    Future.delayed(const Duration(milliseconds: 500), () {
+      showLoading = false;
+    });
+
     _isLoading = false;
   }
 
-
-  // Rafraîchir les markers
   Future<void> refresh() async {
     _cache.clear();
     state = const AsyncValue.data([]);
+    showLoading = true;
     _loadMarkersProgressively();
   }
 }
