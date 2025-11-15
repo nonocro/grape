@@ -1,31 +1,37 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:grape/models/wine_marker.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:flutter/material.dart';
-import 'package:grape/models/wine.dart';
-import 'package:grape/services/wine_service.dart';
+// import 'package:flutter_riverpod/flutter_riverpod.dart';
+// import 'package:flutter_map/flutter_map.dart';
+// import 'package:latlong2/latlong.dart';
+// import 'package:flutter/material.dart';
+// import 'package:grape/services/wine_service.dart';
+// import 'package:grape/models/wine.dart';
+// import 'package:grape/models/wine_marker.dart';
 
-/// Provider qui retourne les markers pour la carte
-final wineMapProvider = FutureProvider<List<WineMarker>>((ref) async {
-  final wines = await WineService(ref).getWinesByLocation();
+// final wineMapProvider = FutureProvider<List<WineMarker>>((ref) async {
+//   // Récupérer la liste des vins depuis le WineService
+//   final List<Wine> wines = await WineService(ref).getWinesByLocation();
 
-  final accent = Colors.red; // ou depuis ton thème
 
-  final wineMarkers = wines.map((wine) {
-    final marker = Marker(
-      point: LatLng(wine.latitude, wine.longitude),
-      width: 40,
-      height: 40,
-      child: GestureDetector(
-        onTap: () {
-          // showDialog ici
-        },
-        child: Icon(Icons.local_bar, color: accent, size: 32),
-      ),
-    );
-    return WineMarker(wine: wine, marker: marker);
-  }).toList();
+//   for (var wine in wines) {
+//     print('AAAAAAAAAAA - Vin: ${wine.name}, Lat: ${wine.latitude}, Lng: ${wine.longitude}, Location: ${wine.location}');
+//   }
 
-  return wineMarkers;
-});
+//   final Color accent =  Colors.red;
+
+//   // Construire les markers pour chaque vin
+//   final List<WineMarker> markers = wines.map((Wine wine) {
+//     final Marker marker = Marker(
+//       point: LatLng(wine.latitude, wine.longitude),
+//       width: 40,
+//       height: 40,
+//       child: Icon(
+//         Icons.local_bar,
+//         color: accent,
+//         size: 32,
+//       ),
+//     );
+
+//     return WineMarker(wine: wine, marker: marker);
+//   }).toList();
+
+//   return markers;
+// });

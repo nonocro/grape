@@ -1,9 +1,12 @@
-import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:grape/models/wine.dart';
 
 class WineMarker {
   final Wine wine;
-  final Marker marker;
+  final LatLng coords;
 
-  WineMarker({required this.wine, required this.marker});
+  WineMarker({
+    required this.wine,
+    required this.coords,
+  });
 }
