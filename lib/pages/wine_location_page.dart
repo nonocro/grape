@@ -57,7 +57,7 @@ class _WineLocationPageState extends ConsumerState<WineLocationPage> {
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: InputDecoration(
-                hintText: "Rechercher un vin, un vignoble ou une ville",
+                hintText: "Rechercher sur la carte",
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -124,7 +124,7 @@ class _WineLocationPageState extends ConsumerState<WineLocationPage> {
                               );
                             },
                             child: Icon(
-                              Icons.local_bar,
+                              Icons.wine_bar,
                               color: accent,
                               size: 32,
                             ),

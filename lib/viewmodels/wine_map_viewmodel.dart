@@ -62,9 +62,9 @@ class WineMapViewModel extends StateNotifier<AsyncValue<List<WineMarker>>> {
         _applyFilter();
 
 
-        print("Marker ajouté pour ${wine.location}: ${coords.latitude}, ${coords.longitude}");
+        //print("Marker ajouté pour ${wine.location}: ${coords.latitude}, ${coords.longitude}");
       } catch (e) {
-        print("Erreur géocoding '${wine.location}': $e");
+        //print("Erreur géocoding '${wine.location}': $e");
       }
     }
 

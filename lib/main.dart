@@ -9,6 +9,7 @@ import 'package:grape/pages/base_page.dart';
 import 'package:grape/pages/onboarding.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 import 'package:grape/utils/constants.dart';
+import 'package:grape/pages/profile_page.dart';
 
 const int primaryValue = 0xFF781818;
 const Color primaryColor = Color(primaryValue);
@@ -47,6 +48,7 @@ class GrapeApp extends StatelessWidget {
         title: 'Grape',
         theme: ThemeData(
           primarySwatch: customSwatch,
+          primaryColor: primaryColor,
           scaffoldBackgroundColor: Colors.black,
           fontFamily: 'Inter',
           textTheme: TextTheme(
@@ -73,7 +75,8 @@ class GrapeApp extends StatelessWidget {
           RouteNames.splash: (context) => SplashScreen(),
           RouteNames.auth: (context) => AuthGate(),
           RouteNames.home: (context) => BasePage(), // base avec la bottomNavBar
-          RouteNames.onboarding: (context) => Onboarding()
+          RouteNames.onboarding: (context) => Onboarding(),
+          RouteNames.profile: (context) => ProfilePage(),
         },
     );
   }

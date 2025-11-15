@@ -1,5 +1,6 @@
 # Custom
 .vscode/
+.env
 
 # Miscellaneous
 *.class

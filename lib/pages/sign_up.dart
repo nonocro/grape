@@ -131,8 +131,8 @@ class SignUp extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.red.withOpacity(0.1),
-                          border: Border.all(color: Colors.red.withOpacity(0.5)),
+                          color: Colors.red.withValues(alpha: 0.1),
+                          border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(

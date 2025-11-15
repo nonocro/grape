@@ -1,4 +1,3 @@
-
 // Constantes pour SharedPreferences
 const String kOnboardingCompletedKey = 'onboarding_completed';
 
@@ -8,5 +7,6 @@ class RouteNames {
   static const String home = '/home';
   static const String onboarding = '/onboarding';
   static const String auth = '/auth';
+  static const String profile = '/profile';
 }
 
