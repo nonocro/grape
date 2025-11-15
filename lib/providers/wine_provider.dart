@@ -6,3 +6,4 @@ import '../services/wine.dart';
 final wineListProvider = FutureProvider<List<Wine>>((ref) async {
   return fetchRedWines();
 });
+

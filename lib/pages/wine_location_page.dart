@@ -1,11 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:grape/models/wine.dart';
-import 'package:grape/services/wine.dart';
-import 'package:grape/components/homepage/small_wine_card.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:grape/theme/app_colors_extension.dart';
+import 'package:grape/services/location_service.dart';
+import 'package:grape/models/wine_marker.dart';
+import 'package:grape/providers/wine_map_provider.dart';
 
 class WineLocationPage extends ConsumerStatefulWidget {
   const WineLocationPage({super.key});
@@ -15,107 +17,171 @@ class WineLocationPage extends ConsumerStatefulWidget {
 }
 
 class _WineLocationPageState extends ConsumerState<WineLocationPage> {
-  late Future<List<Wine>> _winesFuture;
-  String? _userCountry;
-  String? _userRegion;
+  late final MapController _mapController;
+  Timer? _searchDebounce;
 
   @override
   void initState() {
     super.initState();
-      _winesFuture = _loadData();
+    _mapController = MapController();
 
+    // Lancer la localisation utilisateur
+    ref.read(locationServiceProvider).fetchUserLocation();
   }
 
-  Future<List<Wine>> _loadData() async {
-    await _getLocation();
-    return fetchRedWines();
-  }
-
-  Future<void> _getLocation() async {
-    LocationPermission permission = await Geolocator.requestPermission();
-    if (permission == LocationPermission.denied ||
-        permission == LocationPermission.deniedForever) {
-      _userCountry = null;
-      _userRegion = null;
-      return;
-    }
-
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.low,
-      ),
-    );
-
-    final placemarks =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
-
-    if (placemarks.isNotEmpty) {
-      final place = placemarks.first;
-      _userCountry = place.country;
-      _userRegion = place.administrativeArea ?? place.locality;
-    }
-  }
-
-  List<Wine> _filterByLocation(List<Wine> wines) {
-    if (_userCountry == null) return wines;
-
-    final region = _userRegion?.toLowerCase() ?? '';
-    final country = _userCountry!.toLowerCase();
-
-    // On filtre par pays, puis par région si dispo
-    return wines.where((wine) {
-      final loc = wine.location.toLowerCase();
-      return loc.contains(country) || loc.contains(region);
-    }).toList();
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColorsExtension>();
-    final accent = colors?.accentColor ?? Theme.of(context).primaryColor;
+    final Color accent =
+        Theme.of(context).extension<AppColorsExtension>()?.accentColor ??
+        Colors.red;
 
     return Scaffold(
-      backgroundColor: colors?.backgroundColor ?? Colors.white,
       appBar: AppBar(
         title: const Text("Vins près de chez vous"),
         backgroundColor: accent,
-      ),
-      body: FutureBuilder<List<Wine>>(
-        future: _winesFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (snapshot.hasError) {
-            return Center(child: Text("Erreur : ${snapshot.error}"));
-          }
-
-          final wines = snapshot.data ?? [];
-          final localWines = _filterByLocation(wines);
-
-          if (localWines.isEmpty) {
-            return const Center(
-              child: Text("Aucun vin trouvé près de votre position."),
-            );
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: localWines.length,
-            itemBuilder: (context, index) {
-              final wine = localWines[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: SmallWineCard(
-                  wine: wine,
-                  cardColor: accent,
-                  textColor: Colors.black,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => ref.read(wineMapProvider.notifier).refresh(),
+          ),
+        ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: "Rechercher sur la carte",
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
+                filled: true,
+                fillColor: Colors.white,
+              ),
+              onChanged: (query) {
+                // Debounce pour éviter de filtrer à chaque frappe
+                _searchDebounce?.cancel();
+                _searchDebounce = Timer(const Duration(milliseconds: 400), () {
+                  ref.read(wineMapProvider.notifier).setSearchQuery(query);
+                });
+              },
+            ),
+          ),
+        ),
+      ),
+      body: Stack(
+        children: [
+          Consumer(
+            builder: (context, ref, _) {
+              final AsyncValue<List<WineMarker>> wineMarkersAsync = ref.watch(
+                wineMapProvider,
+              );
+
+              return FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  initialCenter: LatLng(46.5, 2.0),
+                  initialZoom: 5.5,
+                  minZoom: 3,
+                  maxZoom: 18,
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    userAgentPackageName: 'com.example.grape',
+                  ),
+                  wineMarkersAsync.when(
+                    data: (markers) {
+                      final List<Marker> flutterMarkers = markers.map((wm) {
+                        return Marker(
+                          point: wm.coords,
+                          width: 40,
+                          height: 40,
+                          child: GestureDetector(
+                            onTap: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => AlertDialog(
+                                  title: Text(wm.wine.name),
+                                  content: Text(
+                                    "Vignoble: ${wm.wine.winery}\nLocalisation: ${wm.wine.location}",
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text("Fermer"),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: Icon(
+                              Icons.wine_bar,
+                              color: accent,
+                              size: 32,
+                            ),
+                          ),
+                        );
+                      }).toList();
+
+                      return MarkerLayer(markers: flutterMarkers);
+                    },
+                    loading: () => const MarkerLayer(markers: []),
+                    error: (err, _) => MarkerLayer(markers: []),
+                  ),
+                ],
               );
             },
-          );
-        },
+          ),
+          // Loader flottant en bas si les markers sont en cours de chargement
+          Consumer(
+            builder: (context, ref, _) {
+              final viewModel = ref.read(wineMapProvider.notifier);
+              if (viewModel.showLoading) {
+                return Positioned(
+                  bottom: 16,
+                  left: 16,
+                  right: 16,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          "Chargement des vins...",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ],
       ),
     );
   }

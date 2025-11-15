@@ -1,3 +1,5 @@
+import 'package:grape/models/rating.dart';
+
 class Wine {
   final String winery;
   final String name;
@@ -23,23 +25,6 @@ class Wine {
       location: json['location'] as String,
       image: json['image'] as String,
       id: json['id'] as int,
-    );
-  }
-}
-
-class Rating {
-  final String average;
-  final String reviews;
-
-  Rating({
-    required this.average,
-    required this.reviews,
-  });
-
-  factory Rating.fromJson(Map<String, dynamic> json) {
-    return Rating(
-      average: json['average'] as String,
-      reviews: json['reviews'] as String,
     );
   }
 }
