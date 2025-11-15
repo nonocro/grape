@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grape/providers/wine_provider.dart';
 import 'package:grape/utils/constants.dart';
-import 'dart:async';
 import 'package:lottie/lottie.dart';
 
 class SplashScreen extends ConsumerWidget {

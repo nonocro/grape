@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 
 // Constantes pour SharedPreferences
 const String kOnboardingCompletedKey = 'onboarding_completed';
