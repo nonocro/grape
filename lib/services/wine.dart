@@ -2,11 +2,14 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import '../models/wine.dart';
+import 'dart:developer';
 
 Future<List<Wine>> fetchRedWines() async {
+  log('data: fetching started');
   final response = await http.get(
     Uri.parse('https://api.sampleapis.com/wines/reds'),
   );
+  log('data: fetching completed with status code ${response.statusCode}');
 
   if (response.statusCode == 200) {
     final List<dynamic> winesJson = jsonDecode(response.body) as List<dynamic>;

@@ -1,30 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grape/theme/app_colors_extension.dart';
-import 'package:grape/services/wine.dart';
 import 'package:grape/models/wine.dart';
 import 'package:grape/components/homepage/small_wine_card.dart';
 import 'package:grape/components/homepage/big_wine_card.dart';
+import 'package:grape/providers/wine_provider.dart';
+import 'package:grape/providers/location_provider.dart';
 import "dart:math";
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  late Future<List<Wine>> _wines;
-  String? _userCountry;
-  String? _userCityAndRegion;
+class _HomePageState extends ConsumerState<HomePage> {
   AppColorsExtension? _theme;
 
   @override
   void initState() {
     super.initState();
-    _wines = fetchRedWines();
     _askLocationAndFetch();
   }
 
@@ -32,6 +30,11 @@ class _HomePageState extends State<HomePage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _theme = Theme.of(context).extension<AppColorsExtension>();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   Future<void> _askLocationAndFetch() async {
@@ -53,10 +56,11 @@ class _HomePageState extends State<HomePage> {
     String cityAndRegion = (placemarks != null && placemarks.isNotEmpty && placemarks.first.locality != null)
         ? placemarks.first.locality!
         : '';
-    setState(() {
-      _userCityAndRegion = cityAndRegion;
-      _userCountry = country;
-    });
+    
+    if (mounted) {
+      ref.read(userCountryProvider.notifier).state = country;
+      ref.read(userCityAndRegionProvider.notifier).state = cityAndRegion;
+    }
   }
 
   List<Wine> filterWines(List<Wine> wines, String? country, String? cityAndRegion) {
@@ -74,6 +78,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final bgColor = _theme?.backgroundColor ?? Colors.white;
+    final winesAsync = ref.watch(wineListProvider);
+    final userCountry = ref.watch(userCountryProvider);
+    final userCityAndRegion = ref.watch(userCityAndRegionProvider);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -89,23 +96,18 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      body: FutureBuilder<List<Wine>>(
-        future: _wines,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Erreur: ${snapshot.error}'));
-          } else if (snapshot.hasData) {
-            final wines = snapshot.data!;
-            var nearWines = filterWines(wines, _userCountry, _userCityAndRegion);
+      body: winesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Erreur: $error')),
+        data: (wines) {
+            var nearWines = filterWines(wines, userCountry, userCityAndRegion);
             var limitedNearWines = nearWines.take(10).toList();
             var limitedNearWines2 = wines.skip(10).take(10).toList();
             final bestWine = wines[Random().nextInt(wines.length)];
 
             if (limitedNearWines.isEmpty && limitedNearWines2.isEmpty) {
-              nearWines = (_userCountry != null && _userCountry!.isNotEmpty)
-                ? wines.where((wine) => wine.location.contains(_userCountry!)).toList()
+              nearWines = (userCountry != null && userCountry.isNotEmpty)
+                ? wines.where((wine) => wine.location.contains(userCountry)).toList()
                 : wines;
 
               limitedNearWines = nearWines.take(10).toList();
@@ -265,9 +267,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             );
-          } else {
-            return const Center(child: Text('Aucun vin disponible.'));
-          }
         },
       ),
     );
