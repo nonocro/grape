@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:grape/components/homepage/small_wine_card.dart';
 import 'package:grape/components/wine_of_the_day/medium_wine_card.dart';
 import '../models/wine.dart';
+import 'package:grape/pages/wine_details.dart';
 import '../services/wine_of_the_day.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 
@@ -120,7 +121,7 @@ class _WineOfTheDayState extends State<WineOfTheDay>
                                   Padding(
                                     padding: const EdgeInsets.only(left: 20),
                                     child: SizedBox(
-                                      height: 420,
+                                      height: MediaQuery.of(context).size.height * 0.5,
                                       child: Padding(
                                         padding: const EdgeInsets.only(right: 12),
                                         child: MediumWineCard(
@@ -136,7 +137,12 @@ class _WineOfTheDayState extends State<WineOfTheDay>
                                   const SizedBox(height: 20),
                                   ElevatedButton(
                                     onPressed: () {
-                                      // Action à définir, par ex: naviguer vers une page détails
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => WineDetailsPage(wine: currentWine!),
+                                        ),
+                                      );
                                       print("En savoir plus tapped");
                                     },
                                     style: ElevatedButton.styleFrom(
@@ -162,21 +168,6 @@ class _WineOfTheDayState extends State<WineOfTheDay>
                       ),
                     );
                   },
-                ),
-                // Bouton retour en haut à gauche
-                SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.black),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ),
-                  ),
                 ),
               ],
             ),

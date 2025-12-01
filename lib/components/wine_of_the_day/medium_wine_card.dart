@@ -126,7 +126,7 @@ class _MediumWineCardState extends State<MediumWineCard>
         child: ImageFiltered(
           imageFilter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
           child: Container(
-            width: 250,
+            width: MediaQuery.of(context).size.width * 0.8,
             decoration: BoxDecoration(
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(16),
@@ -136,7 +136,7 @@ class _MediumWineCardState extends State<MediumWineCard>
               clipBehavior: Clip.none,
               children: [
                 Container(
-                  height: 330,
+                    height: MediaQuery.of(context).size.height * 0.4,
                   decoration: BoxDecoration(
                     color: widget.cardColor,
                     borderRadius: const BorderRadius.vertical(
@@ -155,13 +155,13 @@ class _MediumWineCardState extends State<MediumWineCard>
                   },
                   child: Image.network(
                     widget.wine.image,
-                    height: 300,
+                    height: MediaQuery.of(context).size.height * 0.35,
                     fit: BoxFit.contain,
                   ),
                 ),
                 // Texte du vin
                 Positioned(
-                  top: 310,
+                  top: MediaQuery.of(context).size.height * 0.36,
                   left: 16,
                   right: 16,
                   child: Builder(

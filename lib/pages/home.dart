@@ -121,15 +121,6 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => WineOfTheDay()),
-                      );
-                    },
-                    child: Text("test"),
-                    ),
                   if (limitedNearWines.isNotEmpty) ...[
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
