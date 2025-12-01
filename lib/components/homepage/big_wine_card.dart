@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grape/components/wine_image.dart';
 import 'package:grape/models/wine.dart';
 import 'package:grape/pages/wine_details.dart';
 
@@ -87,12 +88,16 @@ class BigWineCard extends StatelessWidget {
                 ),
                 ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                  child: Image.network(
-                    wine.image,
-                    width: 80,
+                  child: SizedBox(
+                    width: 150,
                     height: 200,
+                    child: WineImage(
+                      url: wine.image,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
+                )
+
               ],
             ),
           ],
