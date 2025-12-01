@@ -46,7 +46,6 @@ class SmallWineCard extends StatelessWidget {
                   url: wine.image,
                   width: 80,
                   height: 180,
-                  fit: BoxFit.cover,
                 ),
               ),
             ),

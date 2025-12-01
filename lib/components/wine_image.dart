@@ -4,14 +4,12 @@ class WineImage extends StatelessWidget {
   final String url;
   final double? width;
   final double? height;
-  final BoxFit fit;
 
   const WineImage({
     super.key,
     required this.url,
     this.width,
     this.height,
-    this.fit = BoxFit.cover,
   });
 
   @override
@@ -20,7 +18,6 @@ class WineImage extends StatelessWidget {
       url,
       width: width ?? double.infinity,
       height: height ?? double.infinity,
-      fit: fit,
       errorBuilder: (context, error, stackTrace) {
         return Container(
           width: width,

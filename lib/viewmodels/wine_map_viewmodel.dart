@@ -4,7 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:grape/models/wine.dart';
 import 'package:grape/models/wine_marker.dart';
-import 'package:grape/services/wine_service.dart';
+import 'package:grape/services/wine.dart';
 
 class WineMapViewModel extends StateNotifier<AsyncValue<List<WineMarker>>> {
   final Ref ref;
@@ -46,8 +46,7 @@ class WineMapViewModel extends StateNotifier<AsyncValue<List<WineMarker>>> {
 
     ref.read(wineMapLoadingProvider.notifier).state = true;
 
-    final service = WineService(ref);
-    final List<Wine> wines = await service.fetchFilteredWines();
+    final List<Wine> wines = await fetchRedWines();
 
     for (final wine in wines) {
       try {

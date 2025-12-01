@@ -150,7 +150,6 @@ class _WineDetailsPageState extends State<WineDetailsPage> {
                           url: widget.wine.image,
                           width: 80,
                           height: 200,
-                          fit: BoxFit.cover,
                         ),
                       ),
                       

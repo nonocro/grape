@@ -93,7 +93,6 @@ class BigWineCard extends StatelessWidget {
                     height: 200,
                     child: WineImage(
                       url: wine.image,
-                      fit: BoxFit.cover,
                     ),
                   ),
                 )
