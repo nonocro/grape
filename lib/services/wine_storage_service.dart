@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/wine.dart';
 
@@ -8,15 +7,15 @@ class WineStorageService {
   static const String _dateKey = 'wine_date';
   static const String _historyKey = 'wine_history';
 
-
+  // Sauvegarder le vin du jour
   Future<void> saveWineOfTheDay(Wine wine) async {
     final prefs = await SharedPreferences.getInstance();
-    final today = DateTime.now().toIso8601String();
+    final today = DateTime.now();
 
     final wineJson = jsonEncode({
       'id': wine.id,
       'winery': wine.winery,
-      'wine': wine.wine,
+      'wine': wine.name,
       'location': wine.location,
       'image': wine.image,
       'rating': {
@@ -26,26 +25,25 @@ class WineStorageService {
     });
 
     await prefs.setString(_wineKey, wineJson);
-    await prefs.setString(_dateKey, today);
+    await prefs.setString(_dateKey, DateTime(today.year, today.month, today.day).toIso8601String());
     await addWineToHistory(wine.id);
   }
 
+  // Récupérer le vin du jour si c'est bien pour aujourd'hui
   Future<Wine?> getWineOfTheDay() async {
     final prefs = await SharedPreferences.getInstance();
     final wineString = prefs.getString(_wineKey);
-    final savedDate = prefs.getString(_dateKey);
+    final savedDateString = prefs.getString(_dateKey);
 
-    if (wineString == null || savedDate == null) return null;
+    if (wineString == null || savedDateString == null) return null;
 
-    final saved = DateTime.parse(savedDate);
+    final savedDate = DateTime.parse(savedDateString);
     final now = DateTime.now();
-    final test = DateTime(2025, 11, 4);
-    // On vérifie si la date a changé par rapport à notre dernier enregistrement
-    final isAnotherDay =
-        test.year != now.year || test.month != now.month || test.day != now.day;
+    final today = DateTime(now.year, now.month, now.day);
+    //final test = DateTime(2025, 11, 20);
 
-    if (isAnotherDay) {
-      // Si un autre jour, on efface le vin
+    if (savedDate != today) {
+      // Nouveau jour : effacer l'ancien vin
       await clearWineOfTheDay();
       return null;
     }
@@ -54,6 +52,7 @@ class WineStorageService {
     return Wine.fromJson(json);
   }
 
+  // Ajouter au history
   Future<void> addWineToHistory(int id) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> history = prefs.getStringList(_historyKey) ?? [];

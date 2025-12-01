@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grape/pages/wine_of_the_day.dart';
+import 'package:grape/services/wine_of_the_day.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 import 'package:grape/models/wine.dart';
 import 'package:grape/components/homepage/small_wine_card.dart';
@@ -20,6 +21,7 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage> {
   AppColorsExtension? _theme;
+  
 
   @override
   void initState() {
@@ -119,6 +121,15 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                    ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => WineOfTheDay()),
+                      );
+                    },
+                    child: Text("test"),
+                    ),
                   if (limitedNearWines.isNotEmpty) ...[
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),

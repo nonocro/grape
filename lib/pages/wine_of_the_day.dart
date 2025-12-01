@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:grape/components/homepage/small_wine_card.dart';
+import 'package:grape/components/wine_of_the_day/medium_wine_card.dart';
 import '../models/wine.dart';
 import '../services/wine_of_the_day.dart';
 import 'package:grape/theme/app_colors_extension.dart';
@@ -18,6 +20,7 @@ class _WineOfTheDayState extends State<WineOfTheDay>
   final wineService = WineOfTheDayService();
   Wine? currentWine;
   bool isLoading = true;
+  bool alreadyDiscovered = false;
 
   late AnimationController _verticalController;
   late AnimationController _horizontalController;
@@ -41,9 +44,12 @@ class _WineOfTheDayState extends State<WineOfTheDay>
   }
 
   Future<void> _loadWine() async {
+    final discovered = await wineService.isWineAlreadyDiscovered();
     final wine = await wineService.getWineOfTheDay();
+
     setState(() {
       currentWine = wine;
+      alreadyDiscovered = discovered;
       isLoading = false;
     });
 
@@ -67,61 +73,115 @@ class _WineOfTheDayState extends State<WineOfTheDay>
       backgroundColor: Colors.white,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : AnimatedBuilder(
-              animation:
-                  Listenable.merge([_verticalController, _horizontalController]),
-              builder: (context, child) {
-                return ClipPath(
-                  clipper: AnimatedWavyClipper(
-                    progress: _verticalController.value,
-                    phase: _horizontalController.value * 2 * pi,
-                  ),
-                    child: Container(
-                      color: colors!.accentColor,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 40.0, right: 40.0),
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 110.0),
-                            child:  Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Vin du jour',
-                                  style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                                    color: colors.cardColor,
-                                    fontWeight: FontWeight.bold,
+          : Stack(
+              children: [
+                AnimatedBuilder(
+                  animation: Listenable.merge([_verticalController, _horizontalController]),
+                  builder: (context, child) {
+                    return ClipPath(
+                      clipper: AnimatedWavyClipper(
+                        progress: _verticalController.value,
+                        phase: _horizontalController.value * 2 * pi,
+                      ),
+                      child: Container(
+                        color: colors!.accentColor,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 40.0, right: 40.0),
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 110.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Vin du jour',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displayLarge
+                                        ?.copyWith(
+                                          color: colors.cardColor,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                   ),
-                                ),
-                                const SizedBox(height: 20),
-                                Text(
-                                  'Revenez ici chaque jour pour découvrir un nouveau vin ! 🍇🍷',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.black,
-                                    fontWeight: FontWeight.w500,
+                                  const SizedBox(height: 20),
+                                  Text(
+                                    'Revenez ici chaque jour pour découvrir un nouveau vin ! 🍇🍷',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                    textAlign: TextAlign.center,
                                   ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 40),
-                                // Text(
-                                //   'Le vin du ${DateTime.now().day}/${DateTime.now().month}',
-                                //   style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                                //     color: Colors.black,
-                                //     fontWeight: FontWeight.w500,
-
-                                //   ),
-                                // ),
-                              ],
+                                  const SizedBox(height: 10),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 20),
+                                    child: SizedBox(
+                                      height: 420,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(right: 12),
+                                        child: MediumWineCard(
+                                          key: ValueKey(currentWine?.id),
+                                          wine: currentWine!,
+                                          cardColor: colors.cardColor,
+                                          textColor: Colors.white,
+                                          skipAnimations: alreadyDiscovered,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 20),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      // Action à définir, par ex: naviguer vers une page détails
+                                      print("En savoir plus tapped");
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: colors.cardColor,
+                                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'En savoir plus',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
+                    );
+                  },
+                ),
+                // Bouton retour en haut à gauche
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back, color: Colors.black),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
                     ),
-                );
-              },
+                  ),
+                ),
+              ],
             ),
     );
+
   }
 }
 
