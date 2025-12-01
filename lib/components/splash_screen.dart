@@ -25,25 +25,25 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   Future<void> _initializeApp() async {
     final prefs = await SharedPreferences.getInstance();
     final hasCompletedOnboarding =
-            prefs.getBool(kOnboardingCompletedKey) ?? false;
+          prefs.getBool(kOnboardingCompletedKey) ?? false;
 
     Future<void> dataLoaded = Future(() async {
-      while (ref.read(wineListProvider).isLoading) {
-        await Future.delayed(const Duration(milliseconds: 100));
-      }
+    while (ref.read(wineListProvider).isLoading) {
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
     });
-    
+
     final minTimePassed = Future.delayed(const Duration(seconds: 6));
 
     await Future.wait([dataLoaded, minTimePassed]);
 
-     if (!mounted) return;
+    if (!mounted) return;
 
-      if (!hasCompletedOnboarding) {
-        Navigator.pushReplacementNamed(context, RouteNames.onboarding);
-      } else {
-        Navigator.pushReplacementNamed(context, RouteNames.auth);
-      }
+    if (!hasCompletedOnboarding) {
+      Navigator.pushReplacementNamed(context, RouteNames.onboarding);
+    } else {
+      Navigator.pushReplacementNamed(context, RouteNames.auth);
+    }
   }
 
   @override
