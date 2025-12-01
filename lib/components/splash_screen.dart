@@ -22,7 +22,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _initializeApp() async {
-    final dataLoaded = ref.read(wineListProvider.future);
+    Future<void> dataLoaded = Future(() async {
+      while (ref.read(wineListProvider).isLoading) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+    });
+    
     final minTimePassed = Future.delayed(const Duration(seconds: 6));
 
     await Future.wait([dataLoaded, minTimePassed]);
