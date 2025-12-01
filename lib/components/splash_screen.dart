@@ -6,6 +6,7 @@ import 'package:grape/providers/wine_provider.dart';
 import 'package:grape/utils/constants.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -22,14 +23,22 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   Future<void> _initializeApp() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasCompletedOnboarding =
+            prefs.getBool(kOnboardingCompletedKey) ?? false;
+
     final dataLoaded = ref.read(wineListProvider.future);
     final minTimePassed = Future.delayed(const Duration(seconds: 6));
 
     await Future.wait([dataLoaded, minTimePassed]);
 
-    if (mounted) {
-      Navigator.of(context).pushReplacementNamed(RouteNames.onboarding);
-    }
+     if (!mounted) return;
+
+      if (!hasCompletedOnboarding) {
+        Navigator.pushReplacementNamed(context, RouteNames.onboarding);
+      } else {
+        Navigator.pushReplacementNamed(context, RouteNames.auth);
+      }
   }
 
   @override
