@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grape/components/wine_image.dart';
 import 'package:grape/models/wine.dart';
 import 'package:grape/pages/wine_details.dart';
 
@@ -37,9 +38,16 @@ class SmallWineCard extends StatelessWidget {
             ),
             Positioned(
               top: 10,
-              child: Image.network(
-                wine.image,
-                height: 200,
+              left: 0,
+              right: 0,
+              child: SizedBox(
+                height: 180,
+                child: WineImage(
+                  url: wine.image,
+                  width: 80,
+                  height: 180,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Positioned(
