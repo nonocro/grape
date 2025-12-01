@@ -4,7 +4,6 @@ import 'package:grape/pages/search.dart';
 import 'package:grape/pages/wine_of_the_day.dart';
 import 'package:grape/pages/profile_page.dart';
 import 'package:grape/pages/wine_location_page.dart';
-import 'package:grape/theme/app_colors_extension.dart';
 
 class BasePage extends StatefulWidget {
   const BasePage({super.key});

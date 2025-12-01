@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:grape/pages/home.dart';
-import 'package:grape/pages/wine_of_the_day.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grape/components/auth_gate.dart';
 import 'package:grape/components/splash_screen.dart';
 import 'package:grape/firebase_options.dart';
 import 'package:grape/pages/base_page.dart';
 import 'package:grape/pages/onboarding.dart';
-import 'package:grape/theme/app_colors_extension.dart';
 import 'package:grape/utils/constants.dart';
 import 'package:grape/pages/profile_page.dart';
 

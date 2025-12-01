@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:grape/pages/wine_of_the_day.dart';
-import 'package:grape/services/wine_of_the_day.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 import 'package:grape/models/wine.dart';
 import 'package:grape/components/homepage/small_wine_card.dart';

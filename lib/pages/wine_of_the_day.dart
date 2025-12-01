@@ -1,24 +1,27 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:grape/components/homepage/small_wine_card.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grape/components/wine_of_the_day/medium_wine_card.dart';
-import '../models/wine.dart';
 import 'package:grape/pages/wine_details.dart';
+import '../models/wine.dart';
 import '../services/wine_of_the_day.dart';
 import 'package:grape/theme/app_colors_extension.dart';
 
+// Provider du service
+final wineOfTheDayServiceProvider = Provider<WineOfTheDayService>((ref) {
+  return WineOfTheDayService(ref);
+});
 
-class WineOfTheDay extends StatefulWidget {
+class WineOfTheDay extends ConsumerStatefulWidget {
   const WineOfTheDay({super.key});
 
   @override
-  State<WineOfTheDay> createState() => _WineOfTheDayState();
+  ConsumerState<WineOfTheDay> createState() => _WineOfTheDayState();
 }
 
-class _WineOfTheDayState extends State<WineOfTheDay>
+class _WineOfTheDayState extends ConsumerState<WineOfTheDay>
     with TickerProviderStateMixin {
-  final wineService = WineOfTheDayService();
+  late final WineOfTheDayService wineService;
   Wine? currentWine;
   bool isLoading = true;
   bool alreadyDiscovered = false;
@@ -29,15 +32,18 @@ class _WineOfTheDayState extends State<WineOfTheDay>
   @override
   void initState() {
     super.initState();
-    _loadWine();
 
-    // Animation verticale
+    // Récupérer le service via Riverpod après le premier frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      wineService = ref.read(wineOfTheDayServiceProvider);
+      _loadWine();
+    });
+
     _verticalController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
 
-    // Animation horizontale
     _horizontalController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
@@ -45,8 +51,12 @@ class _WineOfTheDayState extends State<WineOfTheDay>
   }
 
   Future<void> _loadWine() async {
+    if (!mounted) return;
+
     final discovered = await wineService.isWineAlreadyDiscovered();
     final wine = await wineService.getWineOfTheDay();
+
+    if (!mounted) return;
 
     setState(() {
       currentWine = wine;
@@ -54,7 +64,6 @@ class _WineOfTheDayState extends State<WineOfTheDay>
       isLoading = false;
     });
 
-    // Lancer l’animation verticale après avoir chargé le vin
     _verticalController.forward();
   }
 
@@ -67,8 +76,7 @@ class _WineOfTheDayState extends State<WineOfTheDay>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.extension<AppColorsExtension>();
+    final colors = Theme.of(context).extension<AppColorsExtension>()!;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -77,7 +85,8 @@ class _WineOfTheDayState extends State<WineOfTheDay>
           : Stack(
               children: [
                 AnimatedBuilder(
-                  animation: Listenable.merge([_verticalController, _horizontalController]),
+                  animation:
+                      Listenable.merge([_verticalController, _horizontalController]),
                   builder: (context, child) {
                     return ClipPath(
                       clipper: AnimatedWavyClipper(
@@ -85,9 +94,9 @@ class _WineOfTheDayState extends State<WineOfTheDay>
                         phase: _horizontalController.value * 2 * pi,
                       ),
                       child: Container(
-                        color: colors!.accentColor,
+                        color: colors.accentColor,
                         child: Padding(
-                          padding: const EdgeInsets.only(left: 40.0, right: 40.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 40.0),
                           child: Align(
                             alignment: Alignment.topCenter,
                             child: Padding(
@@ -118,20 +127,14 @@ class _WineOfTheDayState extends State<WineOfTheDay>
                                     textAlign: TextAlign.center,
                                   ),
                                   const SizedBox(height: 10),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 20),
-                                    child: SizedBox(
-                                      height: MediaQuery.of(context).size.height * 0.5,
-                                      child: Padding(
-                                        padding: const EdgeInsets.only(right: 12),
-                                        child: MediumWineCard(
-                                          key: ValueKey(currentWine?.id),
-                                          wine: currentWine!,
-                                          cardColor: colors.cardColor,
-                                          textColor: Colors.white,
-                                          skipAnimations: alreadyDiscovered,
-                                        ),
-                                      ),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.height * 0.5,
+                                    child: MediumWineCard(
+                                      key: ValueKey(currentWine?.id),
+                                      wine: currentWine!,
+                                      cardColor: colors.cardColor,
+                                      textColor: Colors.white,
+                                      skipAnimations: alreadyDiscovered,
                                     ),
                                   ),
                                   const SizedBox(height: 20),
@@ -143,11 +146,12 @@ class _WineOfTheDayState extends State<WineOfTheDay>
                                           builder: (context) => WineDetailsPage(wine: currentWine!),
                                         ),
                                       );
-                                      print("En savoir plus tapped");
+                                      //wineService.reset();
                                     },
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: colors.cardColor,
-                                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 24, vertical: 12),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(16),
                                       ),
@@ -172,7 +176,6 @@ class _WineOfTheDayState extends State<WineOfTheDay>
               ],
             ),
     );
-
   }
 }
 
@@ -192,19 +195,15 @@ class AnimatedWavyClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
     final path = Path();
-    final double waveProgress = progress * 0.90;
+    final double waveProgress = progress * 0.9;
     path.moveTo(0, size.height);
 
     final Random rand = Random();
 
     for (double x = 0; x <= size.width; x++) {
-      // Base sinusoïde
       double y = size.height * (1 - waveProgress) +
           sin((x / size.width * waves * pi * waveProgress) + phase) * amplitude;
-
-      // Ajout d'une irrégularité locale
-      y += (rand.nextDouble() - 0.5) * 2; // variation aléatoire subtile
-
+      y += (rand.nextDouble() - 0.5) * 2;
       path.lineTo(x, y);
     }
 

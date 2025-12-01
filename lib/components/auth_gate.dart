@@ -5,10 +5,8 @@ import 'package:grape/pages/base_page.dart';
 import 'package:grape/pages/sign_in.dart';
 
 
-/**
- * Détermine si l'utilisateur est authentifié ou non
- * redirige vers la page de connexion ou la page d'accueil en conséquence
- */
+/// Détermine si l'utilisateur est authentifié ou non
+/// redirige vers la page de connexion ou la page d'accueil en conséquence
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
 

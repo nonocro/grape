@@ -2,7 +2,6 @@ import 'dart:ui';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:grape/models/wine.dart';
-import 'dart:math';
 
 class MediumWineCard extends StatefulWidget {
   final Wine wine;
@@ -126,7 +125,7 @@ class _MediumWineCardState extends State<MediumWineCard>
         child: ImageFiltered(
           imageFilter: ImageFilter.blur(sigmaX: blurSigma, sigmaY: blurSigma),
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.8,
+            width: MediaQuery.of(context).size.width * 0.7,
             decoration: BoxDecoration(
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(16),
@@ -136,7 +135,7 @@ class _MediumWineCardState extends State<MediumWineCard>
               clipBehavior: Clip.none,
               children: [
                 Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
+                  height: MediaQuery.of(context).size.height * 0.4,
                   decoration: BoxDecoration(
                     color: widget.cardColor,
                     borderRadius: const BorderRadius.vertical(
@@ -155,13 +154,13 @@ class _MediumWineCardState extends State<MediumWineCard>
                   },
                   child: Image.network(
                     widget.wine.image,
-                    height: MediaQuery.of(context).size.height * 0.35,
+                    height: MediaQuery.of(context).size.height * 0.32,
                     fit: BoxFit.contain,
                   ),
                 ),
                 // Texte du vin
                 Positioned(
-                  top: MediaQuery.of(context).size.height * 0.36,
+                  top: MediaQuery.of(context).size.height * 0.33,
                   left: 16,
                   right: 16,
                   child: Builder(
