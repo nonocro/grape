@@ -76,11 +76,14 @@ class _SearchPageState extends ConsumerState<SearchPage> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(child: Text('Erreur: $error')),
         data: (allWines) {
-          // Initialiser _filteredWines à la première charge
           if (_filteredWines.isEmpty && _searchController.text.isEmpty) {
-            _filteredWines = allWines.sublist(0,14);
-          } else {
-            _filteredWines = _filteredWines.sublist(0,14);
+            _filteredWines = allWines.length > 14 
+              ? allWines.sublist(0, 14) 
+              : allWines;
+          } else if (_filteredWines.length > 14) {
+            _filteredWines = _filteredWines.length > 14 
+              ? _filteredWines.sublist(0, 14) 
+              : allWines;
           }
 
           return Column(
