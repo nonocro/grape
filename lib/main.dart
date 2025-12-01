@@ -1,13 +1,13 @@
+import 'package:flutter/material.dart';
+import 'package:grape/theme/app_colors_extension.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grape/components/auth_gate.dart';
 import 'package:grape/components/splash_screen.dart';
 import 'package:grape/firebase_options.dart';
 import 'package:grape/pages/base_page.dart';
 import 'package:grape/pages/onboarding.dart';
-import 'package:grape/theme/app_colors_extension.dart';
 import 'package:grape/utils/constants.dart';
 import 'package:grape/pages/profile_page.dart';
 
@@ -52,15 +52,15 @@ class GrapeApp extends StatelessWidget {
           scaffoldBackgroundColor: Colors.black,
           fontFamily: 'Inter',
           textTheme: TextTheme(
-            displayLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-            displayMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-            displaySmall: TextStyle(fontFamily: 'ClimateCrisis'),
-            headlineLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-            headlineMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-            headlineSmall: TextStyle(fontFamily: 'ClimateCrisis'),
-            titleLarge: TextStyle(fontFamily: 'ClimateCrisis'),
-            titleMedium: TextStyle(fontFamily: 'ClimateCrisis'),
-            titleSmall: TextStyle(fontFamily: 'ClimateCrisis'),
+            displayLarge: TextStyle(fontFamily: 'DM_Serif_Text'),
+            displayMedium: TextStyle(fontFamily: 'DM_Serif_Text'),
+            displaySmall: TextStyle(fontFamily: 'DM_Serif_Text'),
+            headlineLarge: TextStyle(fontFamily: 'DM_Serif_Text'),
+            headlineMedium: TextStyle(fontFamily: 'DM_Serif_Text'),
+            headlineSmall: TextStyle(fontFamily: 'DM_Serif_Text'),
+            titleLarge: TextStyle(fontFamily: 'DM_Serif_Text'),
+            titleMedium: TextStyle(fontFamily: 'DM_Serif_Text'),
+            titleSmall: TextStyle(fontFamily: 'DM_Serif_Text'),
           ),
           extensions: const <ThemeExtension<dynamic>>[
             AppColorsExtension(

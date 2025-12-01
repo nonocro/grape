@@ -165,9 +165,7 @@ class OnBoardingContent extends StatelessWidget {
   }
 }
 
-/**
- * Structure pour les pages de onboarding
- */
+/// Structure pour les pages de onboarding
 class OnBoard {
   final String image, title, description;
 

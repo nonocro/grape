@@ -26,6 +26,7 @@ dependencies:
   latlong2: ^0.9.0
   flutter_map_marker_cluster: ^8.2.2
   flutter_dotenv: ^6.0.0
+  confetti: ^0.8.0
 
 dev_dependencies:
   flutter_test:
@@ -37,9 +38,10 @@ flutter:
   uses-material-design: true
   
   fonts:
-    - family: ClimateCrisis
+  
+    - family: DM_Serif_Text
       fonts:
-        - asset: assets/fonts/ClimateCrisis/ClimateCrisis.ttf
+        - asset: assets/fonts/DM_Serif_Text/DMSerifText-Regular.ttf
     - family: Inter
       fonts:
         - asset: assets/fonts/Inter/Inter.ttf
@@ -52,9 +54,11 @@ flutter:
     - assets/animations/
     - assets/images/
     - assets/images/gifs/
+    - assets/data/data.json
 
 flutter_launcher_icons:
   android: true
   ios: true
   image_path: "assets/logo/logo.png"
   remove_alpha_ios: true
+

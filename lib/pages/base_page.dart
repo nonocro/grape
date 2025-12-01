@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:grape/pages/home.dart';
 import 'package:grape/pages/search.dart';
+import 'package:grape/pages/wine_of_the_day.dart';
 import 'package:grape/pages/profile_page.dart';
 import 'package:grape/pages/wine_location_page.dart';
-import 'package:grape/theme/app_colors_extension.dart';
 
 class BasePage extends StatefulWidget {
   const BasePage({super.key});
@@ -18,6 +18,7 @@ class _BasePageState extends State<BasePage> {
   final List<Widget> _pages = const [
     HomePage(),
     SearchPage(),
+    WineOfTheDay(),
     WineLocationPage(),
     ProfilePage(),
   ];
@@ -36,6 +37,8 @@ class _BasePageState extends State<BasePage> {
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Theme.of(context).primaryColor,
         unselectedItemColor: Colors.grey,
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
         backgroundColor: Colors.white,
         items: const [
           BottomNavigationBarItem(
@@ -43,7 +46,8 @@ class _BasePageState extends State<BasePage> {
             activeIcon: Icon(Icons.home),
             label: 'Accueil',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Search"),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: "Recherche"),
+          BottomNavigationBarItem(icon: Icon(Icons.wine_bar), label: "Vin du jour"),
           BottomNavigationBarItem(icon: Icon(Icons.map), label: "Localisation"),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profil"),
         ],
