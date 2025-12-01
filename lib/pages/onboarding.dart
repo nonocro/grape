@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../theme/app_colors_extension.dart';
 import '../utils/constants.dart';
 
 class Onboarding extends StatefulWidget {

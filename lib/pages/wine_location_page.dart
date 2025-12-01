@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -8,6 +7,7 @@ import 'package:grape/theme/app_colors_extension.dart';
 import 'package:grape/services/location_service.dart';
 import 'package:grape/models/wine_marker.dart';
 import 'package:grape/providers/wine_map_provider.dart';
+
 
 class WineLocationPage extends ConsumerStatefulWidget {
   const WineLocationPage({super.key});
@@ -39,7 +39,7 @@ class _WineLocationPageState extends ConsumerState<WineLocationPage> {
   Widget build(BuildContext context) {
     final Color accent =
         Theme.of(context).extension<AppColorsExtension>()?.accentColor ??
-        Colors.red;
+            Colors.red;
 
     return Scaffold(
       appBar: AppBar(
@@ -48,43 +48,80 @@ class _WineLocationPageState extends ConsumerState<WineLocationPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => ref.read(wineMapProvider.notifier).refresh(),
+            onPressed: () {
+              ref.read(wineMapProvider.notifier).refresh();
+            },
           ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Rechercher sur la carte",
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              onChanged: (query) {
-                // Debounce pour éviter de filtrer à chaque frappe
-                _searchDebounce?.cancel();
-                _searchDebounce = Timer(const Duration(milliseconds: 400), () {
-                  ref.read(wineMapProvider.notifier).setSearchQuery(query);
-                });
+            child: Consumer(
+              builder: (context, ref, _) {
+                final wineMarkersAsync = ref.watch(wineMapProvider);
+                int countFiltered = wineMarkersAsync.maybeWhen(
+                  data: (markers) => markers.length,
+                  orElse: () => 0,
+                );
+
+                return Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: "Filtrer la carte",
+                          prefixIcon: const Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                        ),
+                        onChanged: (query) {
+                          _searchDebounce?.cancel();
+                          _searchDebounce =
+                              Timer(const Duration(milliseconds: 400), () {
+                            ref
+                                .read(wineMapProvider.notifier)
+                                .setSearchQuery(query);
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.black87,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        "$countFiltered résultat(s)",
+                        style: const TextStyle(
+                            color: Colors.white, fontSize: 14),
+                      ),
+                    ),
+                  ],
+                );
               },
             ),
           ),
         ),
       ),
-      body: Stack(
-        children: [
-          Consumer(
-            builder: (context, ref, _) {
-              final AsyncValue<List<WineMarker>> wineMarkersAsync = ref.watch(
-                wineMapProvider,
-              );
+      body: Consumer(
+        builder: (context, ref, _) {
+          final AsyncValue<List<WineMarker>> wineMarkersAsync =
+              ref.watch(wineMapProvider);
+          
+          final isLoading = ref.watch(wineMapLoadingProvider);
+          int countTotal = ref.read(wineMapProvider.notifier).totalLoadedMarkers;
 
-              return FlutterMap(
+
+          return Stack(
+            children: [
+              FlutterMap(
                 mapController: _mapController,
                 options: MapOptions(
                   initialCenter: LatLng(46.5, 2.0),
@@ -94,13 +131,12 @@ class _WineLocationPageState extends ConsumerState<WineLocationPage> {
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate:
-                        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    urlTemplate: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                     userAgentPackageName: 'com.example.grape',
                   ),
                   wineMarkersAsync.when(
                     data: (markers) {
-                      final List<Marker> flutterMarkers = markers.map((wm) {
+                      final flutterMarkers = markers.map((wm) {
                         return Marker(
                           point: wm.coords,
                           width: 40,
@@ -112,11 +148,11 @@ class _WineLocationPageState extends ConsumerState<WineLocationPage> {
                                 builder: (_) => AlertDialog(
                                   title: Text(wm.wine.name),
                                   content: Text(
-                                    "Vignoble: ${wm.wine.winery}\nLocalisation: ${wm.wine.location}",
-                                  ),
+                                      "Vignoble: ${wm.wine.winery}\nLocalisation: ${wm.wine.location}"),
                                   actions: [
                                     TextButton(
-                                      onPressed: () => Navigator.pop(context),
+                                      onPressed: () =>
+                                          Navigator.pop(context),
                                       child: const Text("Fermer"),
                                     ),
                                   ],
@@ -138,15 +174,11 @@ class _WineLocationPageState extends ConsumerState<WineLocationPage> {
                     error: (err, _) => MarkerLayer(markers: []),
                   ),
                 ],
-              );
-            },
-          ),
-          // Loader flottant en bas si les markers sont en cours de chargement
-          Consumer(
-            builder: (context, ref, _) {
-              final viewModel = ref.read(wineMapProvider.notifier);
-              if (viewModel.showLoading) {
-                return Positioned(
+              ),
+
+              // Loader flottant en bas
+              if (isLoading)
+                Positioned(
                   bottom: 16,
                   left: 16,
                   right: 16,
@@ -159,8 +191,8 @@ class _WineLocationPageState extends ConsumerState<WineLocationPage> {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        SizedBox(
+                      children: [
+                        const SizedBox(
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
@@ -168,20 +200,18 @@ class _WineLocationPageState extends ConsumerState<WineLocationPage> {
                             color: Colors.white,
                           ),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Text(
-                          "Chargement des vins...",
-                          style: TextStyle(color: Colors.white),
+                          "Chargement des vins... ($countTotal)",
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ],
                     ),
                   ),
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-        ],
+                ),
+            ],
+          );
+        },
       ),
     );
   }

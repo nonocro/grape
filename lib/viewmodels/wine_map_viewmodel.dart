@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:grape/providers/wine_map_provider.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:grape/models/wine.dart';
@@ -10,13 +11,11 @@ class WineMapViewModel extends StateNotifier<AsyncValue<List<WineMarker>>> {
 
   final List<WineMarker> _cache = [];
   bool _isLoading = false;
-
-  // Texte de recherche
   String _searchQuery = '';
-  // Contrôle de l'affichage du loader
-  bool showLoading = true;
 
-  WineMapViewModel(this.ref) : super(const AsyncValue.data([])) {
+  int get totalLoadedMarkers => _cache.length;
+
+  WineMapViewModel(this.ref) : super(const AsyncValue.loading()) {
     _loadMarkersProgressively();
   }
 
@@ -44,8 +43,8 @@ class WineMapViewModel extends StateNotifier<AsyncValue<List<WineMarker>>> {
   Future<void> _loadMarkersProgressively() async {
     if (_isLoading) return;
     _isLoading = true;
-    showLoading = true;
 
+    ref.read(wineMapLoadingProvider.notifier).state = true;
 
     final service = WineService(ref);
     final List<Wine> wines = await service.fetchFilteredWines();
@@ -60,26 +59,19 @@ class WineMapViewModel extends StateNotifier<AsyncValue<List<WineMarker>>> {
 
         // Mise à jour progressive avec filtrage
         _applyFilter();
-
-
-        //print("Marker ajouté pour ${wine.location}: ${coords.latitude}, ${coords.longitude}");
-      } catch (e) {
-        //print("Erreur géocoding '${wine.location}': $e");
-      }
+      } catch (_) {}
     }
 
-    Future.delayed(const Duration(milliseconds: 500), () {
-      showLoading = false;
-    });
-
+    // Stop loader
+    ref.read(wineMapLoadingProvider.notifier).state = false;
     _isLoading = false;
   }
 
+
   /// Rafraîchir les markers et reset la recherche
-  Future<void> refresh() async {
+   Future<void> refresh() async {
     _cache.clear();
-    state = const AsyncValue.data([]);
-    showLoading = true;
-    _loadMarkersProgressively();
+    state = const AsyncValue.loading();
+    await _loadMarkersProgressively();
   }
 }
