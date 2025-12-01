@@ -1,27 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grape/models/wine.dart';
-import 'package:grape/services/wine.dart';
 import 'package:grape/components/homepage/big_wine_card.dart';
 import 'package:grape/theme/app_colors_extension.dart';
+import 'package:grape/providers/wine_provider.dart';
 
-class SearchPage extends StatefulWidget {
+class SearchPage extends ConsumerStatefulWidget {
   const SearchPage({super.key});
 
   @override
-  State<SearchPage> createState() => _SearchPageState();
+  ConsumerState<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _SearchPageState extends ConsumerState<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
-  List<Wine> _allWines = [];
   List<Wine> _filteredWines = [];
-  bool _isLoading = true;
   AppColorsExtension? _theme;
 
   @override
   void initState() {
     super.initState();
-    _loadWines();
   }
 
   @override
@@ -36,27 +34,12 @@ class _SearchPageState extends State<SearchPage> {
     super.dispose();
   }
 
-  Future<void> _loadWines() async {
-    try {
-      final wines = await fetchRedWines();
-      setState(() {
-        _allWines = wines;
-        _filteredWines = wines;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  void _filterWines(String query) {
+  void _filterWines(String query, List<Wine> allWines) {
     setState(() {
       if (query.isEmpty) {
-        _filteredWines = _allWines;
+        _filteredWines = allWines;
       } else {
-        _filteredWines = _allWines.where((wine) {
+        _filteredWines = allWines.where((wine) {
           final nameLower = wine.name.toLowerCase();
           final wineryLower = wine.winery.toLowerCase();
           final locationLower = wine.location.toLowerCase();
@@ -73,6 +56,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     final bgColor = _theme?.backgroundColor ?? Colors.white;
+    final winesAsync = ref.watch(wineListProvider);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -88,39 +72,47 @@ class _SearchPageState extends State<SearchPage> {
           ),
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              controller: _searchController,
-              onChanged: _filterWines,
-              decoration: InputDecoration(
-                hintText: 'Rechercher un vin...',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          _filterWines('');
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.grey[100],
-              ),
-            ),
-          ),
+      body: winesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(child: Text('Erreur: $error')),
+        data: (allWines) {
+          // Initialiser _filteredWines à la première charge
+          if (_filteredWines.isEmpty && _searchController.text.isEmpty) {
+            _filteredWines = allWines.sublist(0,14);
+          } else {
+            _filteredWines = _filteredWines.sublist(0,14);
+          }
 
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _filteredWines.isEmpty
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (query) => _filterWines(query, allWines),
+                  decoration: InputDecoration(
+                    hintText: 'Rechercher un vin...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchController.text.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              _searchController.clear();
+                              _filterWines('', allWines);
+                            },
+                          )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: _filteredWines.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -143,7 +135,7 @@ class _SearchPageState extends State<SearchPage> {
                       )
                     : SingleChildScrollView(
                       child: SizedBox(
-                        height: 550,
+                        height: 650,
                         child: ListView.builder(
                           scrollDirection: Axis.vertical,
                           itemCount: _filteredWines.length,
@@ -160,8 +152,10 @@ class _SearchPageState extends State<SearchPage> {
                         ),
                       ),
                     )
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
